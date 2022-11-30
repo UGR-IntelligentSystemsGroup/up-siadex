@@ -1,0 +1,285 @@
+(define (domain zeno_0-domain)
+ (:requirements
+   :strips
+   :typing
+   :fluents
+   :universal-preconditions
+   :durative-actions
+   :htn-expansion
+ )
+ (:types
+    movable city - object
+    person aircraft - movable
+ )
+ (:constants
+   p7 p12 p19 p23 p2 p5 p8 p13 p15 p10 p3 p20 p4 p21 p9 p22 p11 p6 p14 p18 p17 p24 p16 p1 p25 - person
+ )
+ (:predicates (at_ ?m - movable ?c - city)
+  (in ?p - person ?a - aircraft)
+  (different ?x - object ?y - object)
+  (equal ?x - object ?y - object)
+  (otro ?x - object)
+  (hay_fuel_lento ?a_0 - object ?c1 - object ?c2 - object)
+  (hay_fuel_rapido ?a_0 - object ?c1 - object ?c2 - object)
+  (no_sobrepasado_fuel_lento ?a_0 - object ?c1 - object ?c2 - object)
+  (no_sobrepasado_fuel_rapido ?a_0 - object ?c1 - object ?c2 - object)
+  (destino ?p - person ?c - city)
+  (hay_tiempo_lento ?a - aircraft ?c1_0 - city ?c2_0 - city)
+  (hay_tiempo_rapido ?a - aircraft ?c1_0 - city ?c2_0 - city)
+  (es_ciudad ?c - city)
+ )
+ (:functions (fuel ?a - aircraft)
+  (capacity ?a - aircraft)
+  (distance ?c1_0 - city ?c2_0 - city)
+  (slow_speed ?a - aircraft)
+  (fast_speed ?a - aircraft)
+  (slow_burn ?a - aircraft)
+  (fast_burn ?a - aircraft)
+  (refuel_rate ?a - aircraft)
+  (total_fuel_used)
+  (fuel_limit)
+  (boarding_time)
+  (debarking_time)
+  (num_pasajeros ?a - aircraft)
+  (max_pasajeros ?a - aircraft)
+  (max_tiempo_vuelo ?a - aircraft)
+  (distance2 ?x1 - object ?y1 - object ?x2 - object ?y2 - object)
+ )
+ (:task transport_person
+  :parameters (?p - person ?c - city )
+  (:method transport_person_case1
+   :precondition (and
+    (at_ ?p ?c)
+    )
+   :tasks (
+   )
+  )
+  (:method transport_person_case2
+   :precondition (and
+    (and (at_ ?p ?c1_0) (at_ ?a ?c1_0))
+    )
+   :tasks (
+    (embarcar_pasajeros ?a - aircraft ?c1_0 - city ?c2_0 - city )
+   )
+  )
+  (:method transport_person_case3
+   :precondition (and
+    (and (at_ ?p ?c1_0) (at_ ?a ?c2_0) (not (= ?c1_0 ?c2_0)))
+    )
+   :tasks (
+    (embarcar_pasajeros ?a - aircraft ?c1_0 - city ?c2_0 - city )
+    (mover_avion ?a - aircraft ?c1_0 - city ?c2_0 - city )
+    (desembarcar_pasajeros ?a - aircraft ?c - city )
+    (embarcar_pasajeros ?a - aircraft ?c1_0 - city ?c2_0 - city )
+    (mover_avion ?a - aircraft ?c1_0 - city ?c2_0 - city )
+    (desembarcar_pasajeros ?a - aircraft ?c - city )
+   )
+  )
+ )
+ (:task mover_avion
+  :parameters (?a - aircraft ?c1_0 - city ?c2_0 - city )
+  (:method mover_avion_rapido_no_refuel
+   :precondition (and
+    (and (<= (* (fast_burn ?a) (distance ?c1_0 ?c2_0)) (fuel ?a)) (< (+ (* (fast_burn ?a) (distance ?c1_0 ?c2_0)) (total_fuel_used)) (fuel_limit)) (<= (/ (distance ?c1_0 ?c2_0) (fast_speed ?a)) (max_tiempo_vuelo ?a)))
+    )
+   :tasks (
+    (zoom ?a - aircraft ?c1_0 - city ?c2_0 - city )
+   )
+  )
+  (:method mover_avion_rapido_refuel
+   :precondition (and
+    (and (not (<= (* (fast_burn ?a) (distance ?c1_0 ?c2_0)) (fuel ?a))) (< (+ (* (fast_burn ?a) (distance ?c1_0 ?c2_0)) (total_fuel_used)) (fuel_limit)) (<= (/ (distance ?c1_0 ?c2_0) (fast_speed ?a)) (max_tiempo_vuelo ?a)))
+    )
+   :tasks (
+    (refuel ?a - aircraft ?c - city )
+    (zoom ?a - aircraft ?c1_0 - city ?c2_0 - city )
+   )
+  )
+  (:method mover_avion_lento_no_refuel
+   :precondition (and
+    (and (<= (* (slow_burn ?a) (distance ?c1_0 ?c2_0)) (fuel ?a)) (< (+ (* (slow_burn ?a) (distance ?c1_0 ?c2_0)) (total_fuel_used)) (fuel_limit)) (<= (/ (distance ?c1_0 ?c2_0) (slow_speed ?a)) (max_tiempo_vuelo ?a)))
+    )
+   :tasks (
+    (fly ?a - aircraft ?c1_0 - city ?c2_0 - city )
+   )
+  )
+  (:method mover_avion_lento_refuel
+   :precondition (and
+    (and (not (<= (* (slow_burn ?a) (distance ?c1_0 ?c2_0)) (fuel ?a))) (< (+ (* (slow_burn ?a) (distance ?c1_0 ?c2_0)) (total_fuel_used)) (fuel_limit)) (<= (/ (distance ?c1_0 ?c2_0) (slow_speed ?a)) (max_tiempo_vuelo ?a)))
+    )
+   :tasks (
+    (refuel ?a - aircraft ?c - city )
+    (fly ?a - aircraft ?c1_0 - city ?c2_0 - city )
+   )
+  )
+  (:method mover_avion_escala
+   :precondition ( )
+   :tasks (
+   )
+  )
+ )
+ (:task hacer_escala
+  :parameters (?a - aircraft ?c1_0 - city ?c2_0 - city )
+  (:method hacer_escala_rapido_no_refuel
+   :precondition (and
+    (and (<= (* (fast_burn ?a) (distance ?c1_0 ?c2_0)) (fuel ?a)) (< (+ (* (fast_burn ?a) (distance ?c1_0 ?c2_0)) (total_fuel_used)) (fuel_limit)) (<= (/ (distance ?c1_0 ?c2_0) (fast_speed ?a)) (max_tiempo_vuelo ?a)))
+    )
+   :tasks (
+    (zoom ?a - aircraft ?c1_0 - city ?c2_0 - city )
+   )
+  )
+  (:method hacer_escala_rapido_refuel
+   :precondition (and
+    (and (not (<= (* (fast_burn ?a) (distance ?c1_0 ?c2_0)) (fuel ?a))) (< (+ (* (fast_burn ?a) (distance ?c1_0 ?c2_0)) (total_fuel_used)) (fuel_limit)) (<= (/ (distance ?c1_0 ?c2_0) (fast_speed ?a)) (max_tiempo_vuelo ?a)))
+    )
+   :tasks (
+    (refuel ?a - aircraft ?c - city )
+    (zoom ?a - aircraft ?c1_0 - city ?c2_0 - city )
+   )
+  )
+  (:method hacer_escala_lento_no_refuel
+   :precondition (and
+    (and (<= (* (slow_burn ?a) (distance ?c1_0 ?c2_0)) (fuel ?a)) (< (+ (* (slow_burn ?a) (distance ?c1_0 ?c2_0)) (total_fuel_used)) (fuel_limit)) (<= (/ (distance ?c1_0 ?c2_0) (slow_speed ?a)) (max_tiempo_vuelo ?a)))
+    )
+   :tasks (
+    (fly ?a - aircraft ?c1_0 - city ?c2_0 - city )
+   )
+  )
+  (:method hacer_escala_lento_refuel
+   :precondition (and
+    (and (not (<= (* (slow_burn ?a) (distance ?c1_0 ?c2_0)) (fuel ?a))) (< (+ (* (slow_burn ?a) (distance ?c1_0 ?c2_0)) (total_fuel_used)) (fuel_limit)) (<= (/ (distance ?c1_0 ?c2_0) (slow_speed ?a)) (max_tiempo_vuelo ?a)))
+    )
+   :tasks (
+    (refuel ?a - aircraft ?c - city )
+    (fly ?a - aircraft ?c1_0 - city ?c2_0 - city )
+   )
+  )
+ )
+ (:task embarcar_pasajeros
+  :parameters (?a - aircraft ?c1_0 - city ?c2_0 - city )
+  (:method embarcar_pasajeros_case1
+   :precondition (and
+    (and (at_ ?p ?c1_0) (at_ ?a ?c1_0) (destino ?p ?c2_0))
+    )
+   :tasks (
+    (board ?p - person ?a - aircraft ?c - city )
+    (embarcar_pasajeros ?a - aircraft ?c1_0 - city ?c2_0 - city )
+   )
+  )
+  (:method embarcar_pasajeros_case2
+   :precondition ( )
+   :tasks (
+   )
+  )
+ )
+ (:task desembarcar_pasajeros
+  :parameters (?a - aircraft ?c - city )
+  (:method desembarcar_pasajeros_case1
+   :precondition (and
+    (and (in ?p ?a) (at_ ?a ?c) (destino ?p ?c))
+    )
+   :tasks (
+    (debark ?p - person ?a - aircraft ?c - city )
+    (desembarcar_pasajeros ?a - aircraft ?c - city )
+   )
+  )
+  (:method desembarcar_pasajeros_case2
+   :precondition ( )
+   :tasks (
+   )
+  )
+ )
+ (:durative-action board
+  :parameters (?p - person ?a - aircraft ?c - city )
+  :duration (= ?duration (boarding_time))
+  :condition (and
+   (at start (at_ ?p ?c))
+   (at start (at_ ?a ?c))
+   (at start (< (num_pasajeros ?a) (max_pasajeros ?a)))
+  )
+  :effect (and
+   (at end (not (at_ ?p ?c)))
+   (at end (in ?p ?a))
+   (at end (increase (num_pasajeros ?a) 1))
+  )
+ )
+ (:durative-action debark
+  :parameters (?p - person ?a - aircraft ?c - city )
+  :duration (= ?duration (debarking_time))
+  :condition (and
+   (at start (in ?p ?a))
+   (at start (at_ ?a ?c))
+  )
+  :effect (and
+   (at end (not (in ?p ?a)))
+   (at end (at_ ?p ?c))
+   (at end (decrease (num_pasajeros ?a) 1))
+  )
+ )
+ (:durative-action fly
+  :parameters (?a - aircraft ?c1_0 - city ?c2_0 - city )
+  :duration (= ?duration (/ (distance ?c1_0 ?c2_0) (slow_speed ?a)))
+  :condition (and
+   (at end (at_ ?a ?c1_0))
+   (at start (<= (/ (distance ?c1_0 ?c2_0) (fast_speed ?a)) (max_tiempo_vuelo ?a)))
+   (at start (<= (* (slow_burn ?a) (distance ?c1_0 ?c2_0)) (fuel ?a)))
+  )
+  :effect (and
+   (at end (not (at_ ?a ?c1_0)))
+   (at end (increase (total_fuel_used) (* (slow_burn ?a) (distance ?c1_0 ?c2_0))))
+   (at end (decrease (fuel ?a) (* (slow_burn ?a) (distance ?c1_0 ?c2_0))))
+   (at start (at_ ?a ?c2_0))
+  )
+ )
+ (:durative-action zoom
+  :parameters (?a - aircraft ?c1_0 - city ?c2_0 - city )
+  :duration (= ?duration (/ (distance ?c1_0 ?c2_0) (fast_speed ?a)))
+  :condition (and
+   (at start (at_ ?a ?c1_0))
+   (at start (<= (* (fast_burn ?a) (distance ?c1_0 ?c2_0)) (fuel ?a)))
+   (at start (forall (?p_0 - person)
+ (at_ ?p_0 ?c2_0)))
+  )
+  :effect (and
+   (at end (not (at_ ?a ?c1_0)))
+   (at end (increase (total_fuel_used) (* (fast_burn ?a) (distance ?c1_0 ?c2_0))))
+   (at end (decrease (fuel ?a) (* (fast_burn ?a) (distance ?c1_0 ?c2_0))))
+   (at end (at_ p1 ?c2_0))
+   (at end (at_ p2 ?c2_0))
+   (at end (at_ p3 ?c2_0))
+   (at end (at_ p4 ?c2_0))
+   (at end (at_ p5 ?c2_0))
+   (at end (at_ p6 ?c2_0))
+   (at end (at_ p7 ?c2_0))
+   (at end (at_ p8 ?c2_0))
+   (at end (at_ p9 ?c2_0))
+   (at end (at_ p10 ?c2_0))
+   (at end (at_ p11 ?c2_0))
+   (at end (at_ p12 ?c2_0))
+   (at end (at_ p13 ?c2_0))
+   (at end (at_ p14 ?c2_0))
+   (at end (at_ p15 ?c2_0))
+   (at end (at_ p16 ?c2_0))
+   (at end (at_ p17 ?c2_0))
+   (at end (at_ p18 ?c2_0))
+   (at end (at_ p19 ?c2_0))
+   (at end (at_ p20 ?c2_0))
+   (at end (at_ p21 ?c2_0))
+   (at end (at_ p22 ?c2_0))
+   (at end (at_ p23 ?c2_0))
+   (at end (at_ p24 ?c2_0))
+   (at end (at_ p25 ?c2_0))
+  )
+ )
+ (:durative-action refuel
+  :parameters (?a - aircraft ?c - city )
+  :duration (= ?duration (/ (- (capacity ?a) (fuel ?a)) (refuel_rate ?a)))
+  :condition (and
+   (at start (< (fuel ?a) (capacity ?a)))
+   (over all (at_ ?a ?c))
+  )
+  :effect (and
+   (at end (assign (fuel ?a) (capacity ?a)))
+  )
+ )
+)

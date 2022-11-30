@@ -5,21 +5,16 @@ import subprocess
 import sys
 import tempfile
 from asyncio.subprocess import PIPE
-from typing import IO, Callable, List, Optional
+from typing import IO, Callable, List, Optional, Union
 
 import pkg_resources
 import unified_planning as up
 from unified_planning.engines import Credits, PDDLPlanner
-from unified_planning.engines.pddl_planner import (
-    run_command_asyncio,
-    run_command_posix_select,
-)
-from unified_planning.engines.results import (
-    LogLevel,
-    LogMessage,
-    PlanGenerationResult,
-    PlanGenerationResultStatus,
-)
+from unified_planning.engines.pddl_planner import (run_command_asyncio,
+                                                   run_command_posix_select)
+from unified_planning.engines.results import (LogLevel, LogMessage,
+                                              PlanGenerationResult,
+                                              PlanGenerationResultStatus)
 from unified_planning.exceptions import UPException
 from unified_planning.io.hpdl.hpdl_writer import HPDLWriter
 from unified_planning.model import ProblemKind
@@ -44,7 +39,7 @@ credits = Credits(
 
 class SIADEXEngine(PDDLPlanner):
     def __init__(self):
-        super().__init__(needs_requirements=False)
+        super().__init__(needs_requirements=True)
 
     @staticmethod
     def name() -> str:
@@ -79,8 +74,8 @@ class SIADEXEngine(PDDLPlanner):
         plan = None
         logs: List["up.engines.results.LogMessage"] = []
         with tempfile.TemporaryDirectory() as tempdir:
-            domain_filename = os.path.join(tempdir, "domain.pddl")
-            problem_filename = os.path.join(tempdir, "problem.pddl")
+            domain_filename = os.path.join(tempdir, "domain.hpdl")
+            problem_filename = os.path.join(tempdir, "problem.hpdl")
             plan_filename = os.path.join(tempdir, "plan.txt")
             w.write_domain(domain_filename)
             w.write_problem(problem_filename)
@@ -150,19 +145,32 @@ class SIADEXEngine(PDDLPlanner):
     def supported_kind() -> "ProblemKind":
         # pylint: disable=no-member
         supported_kind = ProblemKind()
-        supported_kind.set_problem_class("ACTION_BASED")
-        supported_kind.set_typing("FLAT_TYPING")
-        supported_kind.set_conditions_kind("NEGATIVE_CONDITIONS")
-        supported_kind.set_conditions_kind("DISJUNCTIVE_CONDITIONS")
-        supported_kind.set_conditions_kind("EXISTENTIAL_CONDITIONS")
-        supported_kind.set_conditions_kind("UNIVERSAL_CONDITIONS")
-        supported_kind.set_conditions_kind("EQUALITY")
-        supported_kind.set_quality_metrics("ACTIONS_COST")
-        supported_kind.set_quality_metrics("PLAN_LENGTH")
+        # supported_kind.set_problem_class("ACTION_BASED")
+        # supported_kind.set_typing("FLAT_TYPING")
+        # supported_kind.set_conditions_kind("NEGATIVE_CONDITIONS")
+        # supported_kind.set_conditions_kind("DISJUNCTIVE_CONDITIONS")
+        # supported_kind.set_conditions_kind("EXISTENTIAL_CONDITIONS")
+        # supported_kind.set_conditions_kind("UNIVERSAL_CONDITIONS")
+        # supported_kind.set_conditions_kind("EQUALITY")
+        # supported_kind.set_quality_metrics("ACTIONS_COST")
+        # supported_kind.set_quality_metrics("PLAN_LENGTH")
         return supported_kind
 
     def _plan_from_file(
-        self, problem: "up.model.Problem", plan_filename: str
+        self,
+        problem: "up.model.Problem",
+        plan_filename: str,
+        get_item_named: Callable[
+            [str],
+            Union[
+                "up.model.Type",
+                "up.model.Action",
+                "up.model.Fluent",
+                "up.model.Object",
+                "up.model.Parameter",
+                "up.model.Variable",
+            ],
+        ] = None,
     ) -> "up.plans.Plan":
         """Takes a problem and a filename and returns the plan parsed from the file."""
         actions = []
