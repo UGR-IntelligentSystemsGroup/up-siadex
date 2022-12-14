@@ -10,11 +10,16 @@ from typing import IO, Callable, List, Optional, Union
 import pkg_resources
 import unified_planning as up
 from unified_planning.engines import Credits, PDDLPlanner
-from unified_planning.engines.pddl_planner import (run_command_asyncio,
-                                                   run_command_posix_select)
-from unified_planning.engines.results import (LogLevel, LogMessage,
-                                              PlanGenerationResult,
-                                              PlanGenerationResultStatus)
+from unified_planning.engines.pddl_planner import (
+    run_command_asyncio,
+    run_command_posix_select,
+)
+from unified_planning.engines.results import (
+    LogLevel,
+    LogMessage,
+    PlanGenerationResult,
+    PlanGenerationResultStatus,
+)
 from unified_planning.exceptions import UPException
 from unified_planning.io.hpdl.hpdl_writer import HPDLWriter
 from unified_planning.model import ProblemKind
@@ -69,7 +74,6 @@ class SIADEXEngine(PDDLPlanner):
         output_stream: Optional[IO[str]] = None,
     ) -> "up.engines.results.PlanGenerationResult":
         assert isinstance(problem, HierarchicalProblem)
-        # TODO: Replace this with HDPLWriter
         w = HPDLWriter(problem, self._needs_requirements)
         plan = None
         logs: List["up.engines.results.LogMessage"] = []
@@ -145,15 +149,20 @@ class SIADEXEngine(PDDLPlanner):
     def supported_kind() -> "ProblemKind":
         # pylint: disable=no-member
         supported_kind = ProblemKind()
-        # supported_kind.set_problem_class("ACTION_BASED")
-        # supported_kind.set_typing("FLAT_TYPING")
-        # supported_kind.set_conditions_kind("NEGATIVE_CONDITIONS")
-        # supported_kind.set_conditions_kind("DISJUNCTIVE_CONDITIONS")
-        # supported_kind.set_conditions_kind("EXISTENTIAL_CONDITIONS")
-        # supported_kind.set_conditions_kind("UNIVERSAL_CONDITIONS")
-        # supported_kind.set_conditions_kind("EQUALITY")
-        # supported_kind.set_quality_metrics("ACTIONS_COST")
-        # supported_kind.set_quality_metrics("PLAN_LENGTH")
+        supported_kind.set_typing("FLAT_TYPING")
+        supported_kind.set_typing("HIERARCHICAL_TYPING")
+        supported_kind.set_numbers("CONTINUOUS_NUMBERS")
+        supported_kind.set_numbers("DISCRETE_NUMBERS")
+        supported_kind.set_fluents_type("NUMERIC_FLUENTS")
+        supported_kind.set_fluents_type("OBJECT_FLUENTS")
+        supported_kind.set_conditions_kind("NEGATIVE_CONDITIONS")
+        supported_kind.set_conditions_kind("DISJUNCTIVE_CONDITIONS")
+        supported_kind.set_conditions_kind("EQUALITY")
+        supported_kind.set_conditions_kind("EXISTENTIAL_CONDITIONS")
+        supported_kind.set_conditions_kind("UNIVERSAL_CONDITIONS")
+        supported_kind.set_effects_kind("CONDITIONAL_EFFECTS")
+        supported_kind.set_effects_kind("INCREASE_EFFECTS")
+        supported_kind.set_effects_kind("DECREASE_EFFECTS")
         return supported_kind
 
     def _plan_from_file(
@@ -174,20 +183,26 @@ class SIADEXEngine(PDDLPlanner):
     ) -> "up.plans.Plan":
         """Takes a problem and a filename and returns the plan parsed from the file."""
         actions = []
-        with open(plan_filename) as plan:
+        with open(plan_filename, "r", encoding="utf-8") as plan:
             for line in plan.readlines():
                 if re.match(r"^\s*(;.*)?$", line):
                     continue
+                line = line.lower()
+
                 res = re.match(
-                    r"^\d+:\s*\(\s*([\w?-]+)((\s+[\w?-]+)*)\s*\)\s*\[\d+\]$",
+                    r"^:action\s*\(\s*([\w?-_]+)((\s+[\w?-_]+)*)\s*\)\s*$",
                     line.lower(),
                 )
                 if res:
-                    action = problem.action(res.group(1))
+                    action_name = res.group(1).replace("_", "-")
+                    action = problem.action(action_name)
                     parameters = []
-                    for p in res.group(2).split():
+                    for param in res.group(2).split():
+                        param = param.replace("_", "-")
                         parameters.append(
-                            problem.env.expression_manager.ObjectExp(problem.object(p))
+                            problem.env.expression_manager.ObjectExp(
+                                problem.object(param)
+                            )
                         )
                     actions.append(up.plans.ActionInstance(action, tuple(parameters)))
                 else:
@@ -199,20 +214,16 @@ class SIADEXEngine(PDDLPlanner):
     def _result_status(
         self,
         problem: "up.model.Problem",
-        plan: Optional["up.plans.Plan"],
-        retval: int,
-        log_messages: Optional[List[LogMessage]] = None,
-    ) -> "up.engines.results.PlanGenerationResultStatus":
-        """
-        Takes a problem and a plan and returns the status that represents this plan.
-        The possible status with their interpretation can be found in the up.engines.results file.
-
-        :param problem: The up.model.problem.Problem for which the plan was generated.
-        :param plan: The returned parsed plan by the planner; might be None
-        :return: The up.engines.results.PlanGenerationResultStatus corresponding to the given plan.
-            It mainly depends on the plan and on the planner capabilities."""
-        # TODO: check the return value of the planner and return the corresponding status
-        return 0
+        plan: Optional["up.plan.Plan"],
+        retval: int = 0,
+        log_messages: Optional[List["LogMessage"]] = None,
+    ) -> "PlanGenerationResultStatus":
+        if retval != 0:
+            return PlanGenerationResultStatus.INTERNAL_ERROR
+        elif plan is None:
+            return PlanGenerationResultStatus.UNSOLVABLE_PROVEN
+        else:
+            return PlanGenerationResultStatus.SOLVED_SATISFICING
 
     @staticmethod
     def supports(problem_kind: "ProblemKind") -> bool:

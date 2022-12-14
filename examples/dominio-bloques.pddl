@@ -78,12 +78,21 @@
 
 (:task despues-deja
  :parameters (?x - bloque ?y - object)
+ 
  (:method dejalo_en_la_mesa
   :precondition ((igual ?y mesa))
-  :tasks ((dejar ?x)))
+  :tasks ((dejar ?x))
+  
+  )
+
+
  (:method dejalo_en_la_pila
   :precondition ((distinto ?y mesa))
-  :tasks ((apilar ?x ?y))))
+  :tasks ((apilar ?x ?y))
+  
+  )
+  
+  )
 
 
 (:action coger

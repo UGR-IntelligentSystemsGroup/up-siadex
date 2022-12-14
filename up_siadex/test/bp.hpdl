@@ -1,0 +1,24 @@
+(define (problem bloques_1-problem)
+ (:domain bloques_1-domain)
+ (:customization
+  (= :time-format "%d/%m/%Y %H:%M:%S")
+  (= :time-horizon-relative 2500)
+  (= :time-start "05/06/2007 08:00:00")
+  (= :time-unit :hours)
+ )
+ (:objects
+   a b c - bloque
+ )
+ (:init
+  (sobremesa a)
+  (sobre b a)
+  (sobre c b)
+  (libre c)
+  (manovacia)
+ )
+ (:tasks-goal
+  :tasks (
+    (sobre A C)
+  )
+ )
+)

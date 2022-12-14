@@ -2,62 +2,69 @@
  (:requirements
    :strips
    :typing
+   :fluents
    :htn-expansion
  )
  (:types
-    object - object
     bloque superficie - object
  )
- (:predicates (manovacia)
+ (:constants
+   mesa - superficie
+ )
+ (:predicates
+  (manovacia)
   (libre ?x - bloque)
   (cogido ?x - bloque)
   (sobremesa ?x - bloque)
   (sobre ?x - bloque ?y - bloque)
-  (igual ?x_0 - object ?y_0 - object)
-  (distinto ?x_0 - object ?y_0 - object)
+  (distinto ?x - object ?y - object)
  )
- (:task sobre_0
-  :parameters (?x - bloque ?y_0 - object )
+ (:functions (igual ?x - object ?y - object)
+ )
+ (:task sobre
+  :parameters (?x - object ?y - object )
   (:method sobre_poner_encima
-   :precondition ( )
+   :precondition ()
    :tasks (
-    (limpiar ?x - bloque )
-    (limpiar ?x - bloque )
-    (colocar ?x - bloque ?y_0 - object )
+    (limpiar ?x - object )
+    (limpiar ?y - object )
+    (colocar ?x - object ?y - object )
    )
   )
  )
  (:task limpiar
-  :parameters (?x - bloque )
+  :parameters (?x - object )
   (:method limpiar_limpiar_mesa
-   :precondition ( )
-   :tasks (
-   )
-  )
-  (:method limpiar_limpiar_libre
    :precondition (and
-    (libre ?x)
-    )
+    (< 0 (igual ?x mesa))
+   )
    :tasks (
    )
   )
   (:method limpiar_limpiar_ocupado
    :precondition (and
     (sobre ?y ?x)
-    )
+   )
    :tasks (
-    (limpiar ?x - bloque )
-    (colocar ?x - bloque ?y_0 - object )
+    (limpiar ?y - object )
+    (colocar ?y - object mesa )
+   )
+  )
+  (:method limpiar_limpiar_libre
+   :precondition (and
+    (libre ?x)
+   )
+   :tasks (
    )
   )
  )
  (:task colocar
-  :parameters (?x - bloque ?y_0 - object )
+  :parameters (?x - object ?y - object )
   (:method colocar_colocar
-   :precondition ( )
+   :precondition ()
    :tasks (
     (primero_coge ?x - bloque )
-    (despues_deja ?x - bloque ?y_0 - object )
+    (despues_deja ?x - bloque ?y - object )
    )
   )
  )
@@ -66,7 +73,7 @@
   (:method primero_coge_cogelo_de_la_mesa
    :precondition (and
     (sobremesa ?x)
-    )
+   )
    :tasks (
     (coger ?x - bloque )
    )
@@ -74,24 +81,26 @@
   (:method primero_coge_cogelo_de_la_pila
    :precondition (and
     (sobre ?x ?y)
-    )
+   )
    :tasks (
     (desapilar ?x - bloque ?y - bloque )
    )
   )
  )
  (:task despues_deja
-  :parameters (?x - bloque ?y_0 - object )
+  :parameters (?x - bloque ?y - object )
   (:method despues_deja_dejalo_en_la_mesa
-   :precondition ( )
+   :precondition (and
+    (< 0 (igual ?y mesa))
+   )
    :tasks (
     (dejar ?x - bloque )
    )
   )
   (:method despues_deja_dejalo_en_la_pila
    :precondition (and
-    (not (igual ?x_0 ?y_0))
-    )
+    (<= (igual ?y mesa) 0)
+   )
    :tasks (
     (apilar ?x - bloque ?y - bloque )
    )

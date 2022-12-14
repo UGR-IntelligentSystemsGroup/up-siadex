@@ -1,0 +1,103 @@
+(define (domain p-domain)
+ (:requirements
+   :strips
+   :typing
+   :htn-expansion
+ )
+ (:types
+    location locatable capacity_number - object
+    package vehicle - locatable
+ )
+ (:predicates
+  (road ?l1 - location ?l2 - location)
+  (at_ ?x - locatable ?v - location)
+  (in ?x - package ?v - vehicle)
+  (capacity ?v - vehicle ?s1 - capacity_number)
+  (capacity_predecessor ?s1 - capacity_number ?s2 - capacity_number)
+ )
+ (:task deliver
+  :parameters (?p - package ?l - location )
+  (:method m_deliver
+   :precondition ()
+   :tasks (
+    (get_to ?v - vehicle ?l1 - location )
+    (load ?v - vehicle ?l1 - location ?p - package )
+    (get_to ?v - vehicle ?l2 - location )
+    (unload ?v - vehicle ?l2 - location ?p - package )
+   )
+  )
+ )
+ (:task get_to
+  :parameters (?v - vehicle ?l - location )
+  (:method m_drive_to
+   :precondition ()
+   :tasks (
+    (drive ?v - vehicle ?l1 - location ?l2 - location )
+   )
+  )
+  (:method m_drive_to_via
+   :precondition ()
+   :tasks (
+    (get_to ?v - vehicle ?l2 - location )
+    (drive ?v - vehicle ?l2 - location ?l3 - location )
+   )
+  )
+  (:method m_i_am_there
+   :precondition ()
+   :tasks (
+    (noop ?v - vehicle ?l - location )
+   )
+  )
+ )
+ (:task load
+  :parameters (?v - vehicle ?l - location ?p - package )
+  (:method m_load
+   :precondition ()
+   :tasks (
+    (pick_up ?v - vehicle ?l - location ?p - package ?s1 - capacity_number ?s2 - capacity_number )
+   )
+  )
+ )
+ (:task unload
+  :parameters (?v - vehicle ?l - location ?p - package )
+  (:method m_unload
+   :precondition ()
+   :tasks (
+    (drop ?v - vehicle ?l - location ?p - package ?s1 - capacity_number ?s2 - capacity_number )
+   )
+  )
+ )
+ (:action drive
+  :parameters (?v - vehicle ?l1 - location ?l2 - location )
+  :precondition (and
+   (and (at_ ?v ?l1) (road ?l1 ?l2))
+  )
+  :effect (and
+   (not (at_ ?v ?l1))(at_ ?v ?l2)
+  )
+ )
+ (:action noop
+  :parameters (?v - vehicle ?l2 - location )
+  :precondition (and
+   (at_ ?v ?l2)
+  )
+ )
+ (:action pick_up
+  :parameters (?v - vehicle ?l - location ?p - package ?s1 - capacity_number ?s2 - capacity_number )
+  :precondition (and
+   (and (at_ ?v ?l) (at_ ?p ?l) (capacity_predecessor ?s1 ?s2) (capacity ?v ?s2))
+  )
+  :effect (and
+   (not (at_ ?p ?l))(in ?p ?v)(capacity ?v ?s1)(not (capacity ?v ?s2))
+  )
+ )
+ (:action drop
+  :parameters (?v - vehicle ?l - location ?p - package ?s1 - capacity_number ?s2 - capacity_number )
+  :precondition (and
+   (and (at_ ?v ?l) (in ?p ?v) (capacity_predecessor ?s1 ?s2) (capacity ?v ?s1))
+  )
+  :effect (and
+   (not (in ?p ?v))(at_ ?p ?l)(capacity ?v ?s2)(not (capacity ?v ?s1))
+  )
+ )
+)
