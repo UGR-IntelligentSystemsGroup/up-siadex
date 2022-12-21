@@ -34,11 +34,11 @@ if ENV_USE_ASYNCIO is not None:
 credits = Credits(
     "SIADEX",
     "UGR SIADEX Team",
-    "jorgesoler@ugr.es",
-    "ignaciovellido@ugr.es",
-    "faro@decsai.ugr.es",
+    "faro@decsai.ugr.es, jorgesoler@ugr.es, ignaciovellido@ugr.es",
     "https://ugr.es",
-    "<license>",
+    "",
+    "SIADEX ENGINE",
+    "SIADEX HTN PLANNING ENGINE",
 )
 
 
@@ -148,22 +148,25 @@ class SIADEXEngine(PDDLPlanner):
     @staticmethod
     def supported_kind() -> "ProblemKind":
         # pylint: disable=no-member
-        supported_kind = ProblemKind()
-        supported_kind.set_typing("FLAT_TYPING")
-        supported_kind.set_typing("HIERARCHICAL_TYPING")
-        supported_kind.set_numbers("CONTINUOUS_NUMBERS")
-        supported_kind.set_numbers("DISCRETE_NUMBERS")
-        supported_kind.set_fluents_type("NUMERIC_FLUENTS")
-        supported_kind.set_fluents_type("OBJECT_FLUENTS")
-        supported_kind.set_conditions_kind("NEGATIVE_CONDITIONS")
-        supported_kind.set_conditions_kind("DISJUNCTIVE_CONDITIONS")
-        supported_kind.set_conditions_kind("EQUALITY")
-        supported_kind.set_conditions_kind("EXISTENTIAL_CONDITIONS")
-        supported_kind.set_conditions_kind("UNIVERSAL_CONDITIONS")
-        supported_kind.set_effects_kind("CONDITIONAL_EFFECTS")
-        supported_kind.set_effects_kind("INCREASE_EFFECTS")
-        supported_kind.set_effects_kind("DECREASE_EFFECTS")
-        return supported_kind
+        hpdl_kind = ProblemKind()
+        hpdl_kind.set_problem_class("HIERARCHICAL")
+        hpdl_kind.set_typing("HIERARCHICAL_TYPING")
+        hpdl_kind.set_fluents_type("PYTHON_FLUENTS")
+        hpdl_kind.set_conditions_kind("NEGATIVE_CONDITIONS")
+        hpdl_kind.set_conditions_kind("DISJUNCTIVE_CONDITIONS")
+        hpdl_kind.set_conditions_kind("EQUALITY")
+        hpdl_kind.set_conditions_kind("EXISTENTIAL_CONDITIONS")
+        hpdl_kind.set_conditions_kind("UNIVERSAL_CONDITIONS")
+        hpdl_kind.set_effects_kind("CONDITIONAL_EFFECTS")
+        hpdl_kind.set_numbers("DISCRETE_NUMBERS")
+        hpdl_kind.set_numbers("CONTINUOUS_NUMBERS")
+        hpdl_kind.set_fluents_type("NUMERIC_FLUENTS")
+        hpdl_kind.set_effects_kind("INCREASE_EFFECTS")
+        hpdl_kind.set_effects_kind("DECREASE_EFFECTS")
+        hpdl_kind.set_time("TIMED_EFFECT")
+        hpdl_kind.set_time("DURATION_INEQUALITIES")
+        hpdl_kind.set_expression_duration("STATIC_FLUENTS_IN_DURATION")
+        return hpdl_kind
 
     def _plan_from_file(
         self,

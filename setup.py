@@ -4,12 +4,10 @@ import platform
 
 from setuptools import setup  # type: ignore
 
-import up_siadex
-
 arch = (platform.system(), platform.machine())
 
 EXECUTABLES = {
-    ("Linux", "x86_64"): "planner",
+    ("Linux", "x86_64"): "bin/planner",
     # ("Windows", "x86_64"): "aries_windows_x86_64.exe",
     # ("Windows", "aarch64"): "aries_windows_aarch64.exe",
     # ("Windows", "x86"): "aries_windows_x86.exe",
@@ -24,7 +22,7 @@ setup(
     description="up_siadex",
     author="UGR",
     author_email="jorgesoler@ugr.es,ignaciove@ugr.es",
-    packages=["up_lpg"],
+    packages=["up_siadex"],
     package_data={"": [executable]},
     include_package_data=True,
     license="APACHE",
