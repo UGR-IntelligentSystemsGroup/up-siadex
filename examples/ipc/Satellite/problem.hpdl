@@ -1,0 +1,56 @@
+(define (problem prob) (:domain dom)
+  (:objects
+    GroundStation0 GroundStation1 - calib_direction
+    Phenomenon4 Phenomenon6 Phenomenon7 Star5 - image_direction
+    instrument01 instrument02 instrument11 instrument12 - instrument
+    thermograph x_ray - mode
+    satellite0 satellite1 - satellite
+  )
+
+  (:init
+    (on_board instrument01 satellite0)
+    (supports instrument01 thermograph)
+    (calibration_target instrument01 GroundStation0)
+    (on_board instrument02 satellite0)
+    (supports instrument02 x_ray)
+    (calibration_target instrument02 GroundStation0)
+    (power_avail satellite0)
+    (pointing satellite0 Phenomenon6)
+    (on_board instrument11 satellite1)
+    (supports instrument11 thermograph)
+    (calibration_target instrument11 GroundStation1)
+    (on_board instrument12 satellite1)
+    (supports instrument12 x_ray)
+    (calibration_target instrument12 GroundStation1)
+    (power_avail satellite1)
+    (pointing satellite1 Phenomenon7)
+    (type_member_calib_direction GroundStation0)
+    (type_member_calib_direction GroundStation1)
+    (type_member_direction GroundStation0)
+    (type_member_direction GroundStation1)
+    (type_member_direction Phenomenon4)
+    (type_member_direction Phenomenon6)
+    (type_member_direction Phenomenon7)
+    (type_member_direction Star5)
+    (type_member_image_direction Phenomenon4)
+    (type_member_image_direction Phenomenon6)
+    (type_member_image_direction Phenomenon7)
+    (type_member_image_direction Star5)
+    (type_member_instrument instrument01)
+    (type_member_instrument instrument02)
+    (type_member_instrument instrument11)
+    (type_member_instrument instrument12)
+    (type_member_mode thermograph)
+    (type_member_mode x_ray)
+    (type_member_satellite satellite0)
+    (type_member_satellite satellite1)
+  )
+
+  (:tasks-goal
+      :tasks (
+        (do_observation Star5 x_ray)
+        (do_observation Phenomenon4 thermograph)
+        (do_observation Phenomenon6 x_ray)
+      )
+  )
+)

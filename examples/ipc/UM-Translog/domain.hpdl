@@ -1,0 +1,2474 @@
+(define (domain dom)
+  (:requirements 
+    :typing
+    :htn-expansion
+    :negative-preconditions
+    :conditional-effects
+    :universal-preconditions
+    :disjunctive-preconditions
+    :equality
+    :existential-preconditions
+  )
+  (:types 
+    equipment_position package_storage_position thing vehicle_position - object  
+    object__compiled - thing
+    physical - object__compiled
+    equipment - object__compiled
+    package - object__compiled
+    speciality - object__compiled
+    vehicle - object__compiled
+    location - thing
+    city - location
+    city_location - location
+    route - thing
+    region - location
+    bulky - physical
+    regular - physical
+    air_route - route
+    liquid - package
+    liquid - physical
+    livestock - physical
+    water - liquid
+
+    traincar - vehicle
+    traincar - vehicle_position
+    regular_traincar - traincar
+    truck - vehicle 
+    regular_truck - truck
+    regular_vehicle - regular
+    regular_vehicle - vehicle
+    regular_traincar - regular_vehicle
+    regular_truck - regular_vehicle
+    airplane - regular_vehicle
+    tcenter - city_location
+    airport - tcenter
+    granular - physical
+    hub - tcenter
+    airport_hub - airport
+    airport_hub - hub
+    road_route - route
+    hopper - physical
+    sand - granular
+    sand - package
+    steel - bulky
+    steel - package
+    tanker - physical
+    flatbed - physical
+    flatbed_vehicle - vehicle
+    flatbed_vehicle - flatbed
+    flatbed_traincar - traincar
+    flatbed_traincar - flatbed_vehicle
+    flatbed_truck - flatbed_vehicle
+    flatbed_truck - truck
+    tanker_vehicle - tanker
+    tanker_vehicle - vehicle
+    tanker_traincar - traincar
+    tanker_traincar - tanker_vehicle
+    tanker_truck - tanker_vehicle
+    tanker_truck - truck
+    train - vehicle
+    train_station - tcenter
+    train_station_hub - hub
+    train_station_hub - train_station
+    valuable - package
+    vehicle - equipment_position
+    vehicle - package_storage_position
+    water - package
+    armored - speciality
+    hopper_vehicle - hopper
+    hopper_vehicle - vehicle
+    armored_vehicle - armored
+    armored_vehicle - vehicle
+    armored_flatbed_traincar - traincar
+    armored_flatbed_traincar - flatbed_vehicle
+    armored_flatbed_traincar - armored_vehicle
+    armored_flatbed_truck - flatbed_vehicle
+    armored_flatbed_truck - armored_vehicle
+    armored_flatbed_truck - truck
+    armored_hopper_traincar - traincar
+    armored_hopper_traincar - armored_vehicle
+    armored_hopper_traincar - hopper_vehicle
+    armored_hopper_truck - armored_vehicle
+    armored_hopper_truck - truck
+    armored_hopper_truck - hopper_vehicle
+    armored_regular_traincar - regular_vehicle
+    armored_regular_traincar - traincar
+    armored_regular_traincar - armored_vehicle
+    armored_regular_truck - regular_vehicle
+    armored_regular_truck - armored_vehicle
+    armored_regular_truck - truck
+    armored_tanker_traincar - traincar
+    armored_tanker_traincar - tanker_vehicle
+    armored_tanker_traincar - armored_vehicle
+    armored_tanker_truck - tanker_vehicle
+    armored_tanker_truck - armored_vehicle
+    armored_tanker_truck - truck
+
+    auto - physical
+    auto_vehicle - vehicle
+    auto_vehicle - auto
+    auto_truck - truck
+    auto_traincar - traincar
+    auto_traincar - auto_vehicle
+    auto_truck - auto_vehicle
+    cars - package
+    cars - auto
+    hazardous - package
+    chemicals - hazardous
+    chemicals - perishable
+    chemicals - liquid
+    crane - package_storage_position
+    crane - equipment
+    customer_location - not_tcenter
+    
+    food - package
+    food - regular
+    food - perishable
+
+    hopper_traincar - traincar
+    hopper_traincar - hopper_vehicle
+    hopper_truck - truck
+    hopper_truck - hopper_vehicle
+    
+    livestock_package - package
+    livestock_package - livestock
+    livestock_traincar - traincar
+    livestock_traincar - livestock_vehicle
+    livestock_truck - livestock_vehicle
+    livestock_truck - truck
+    livestock_vehicle - livestock
+    livestock_vehicle - vehicle
+    local_road_route - road_route
+    location - vehicle_position
+    location - equipment_position
+    location - package_storage_position
+    lumber - bulky
+    lumber - package
+    mail - physical
+    mail_package - mail
+    mail_package - package
+    mail_package - regular
+    mail_traincar - traincar
+    mail_traincar - mail_vehicle
+    mail_truck - mail_vehicle
+    mail_truck - truck
+    mail_vehicle - regular_vehicle
+    mail_vehicle - mail
+    money_art - valuable
+    money_art - package
+    money_art - regular
+    not_tcenter - city_location
+    ore - granular
+    ore - package
+    parcels - package
+    parcels - regular
+    perishable - package
+    plane_ramp - equipment
+    post_office - not_tcenter
+    rail_route - route
+    refrigerated - speciality
+    refrigerated_regular_traincar - regular_vehicle
+    refrigerated_regular_traincar - traincar
+    refrigerated_regular_traincar - refrigerated_vehicle
+    refrigerated_regular_truck - regular_vehicle
+    refrigerated_regular_truck - truck
+    refrigerated_regular_truck - refrigerated_vehicle
+    refrigerated_tanker_traincar - traincar
+    refrigerated_tanker_traincar - tanker_vehicle
+    refrigerated_tanker_traincar - refrigerated_vehicle
+    refrigerated_tanker_truck - tanker_vehicle
+    refrigerated_tanker_truck - truck
+    refrigerated_tanker_truck - refrigerated_vehicle
+    refrigerated_vehicle - refrigerated
+    refrigerated_vehicle - vehicle
+    
+    )
+
+  (:constants
+    Drucker Toshiba_Laptops - parcels
+  )
+
+  (:predicates
+    (type_member_air_route ?var - object)
+    (type_member_airplane ?var - object)
+    (type_member_airport ?var - object)
+    (type_member_airport_hub ?var - object)
+    (type_member_armored ?var - object)
+    (type_member_armored_flatbed_traincar ?var - object)
+    (type_member_armored_flatbed_truck ?var - object)
+    (type_member_armored_hopper_traincar ?var - object)
+    (type_member_armored_hopper_truck ?var - object)
+    (type_member_armored_regular_traincar ?var - object)
+    (type_member_armored_regular_truck ?var - object)
+    (type_member_armored_tanker_traincar ?var - object)
+    (type_member_armored_tanker_truck ?var - object)
+    (type_member_armored_vehicle ?var - object)
+    (type_member_auto ?var - object)
+    (type_member_auto_traincar ?var - object)
+    (type_member_auto_truck ?var - object)
+    (type_member_auto_vehicle ?var - object)
+    (type_member_bulky ?var - object)
+    (type_member_cars ?var - object)
+    (type_member_chemicals ?var - object)
+    (type_member_city ?var - object)
+    (type_member_city_location ?var - object)
+    (type_member_crane ?var - object)
+    (type_member_customer_location ?var - object)
+    (type_member_equipment ?var - object)
+    (type_member_equipment_position ?var - object)
+    (type_member_flatbed ?var - object)
+    (type_member_flatbed_traincar ?var - object)
+    (type_member_flatbed_truck ?var - object)
+    (type_member_flatbed_vehicle ?var - object)
+    (type_member_food ?var - object)
+    (type_member_granular ?var - object)
+    (type_member_hazardous ?var - object)
+    (type_member_hopper ?var - object)
+    (type_member_hopper_traincar ?var - object)
+    (type_member_hopper_truck ?var - object)
+    (type_member_hopper_vehicle ?var - object)
+    (type_member_hub ?var - object)
+    (type_member_liquid ?var - object)
+    (type_member_livestock ?var - object)
+    (type_member_livestock_package ?var - object)
+    (type_member_livestock_traincar ?var - object)
+    (type_member_livestock_truck ?var - object)
+    (type_member_livestock_vehicle ?var - object)
+    (type_member_local_road_route ?var - object)
+    (type_member_location ?var - object)
+    (type_member_lumber ?var - object)
+    (type_member_mail ?var - object)
+    (type_member_mail_package ?var - object)
+    (type_member_mail_traincar ?var - object)
+    (type_member_mail_truck ?var - object)
+    (type_member_mail_vehicle ?var - object)
+    (type_member_money_art ?var - object)
+    (type_member_not_tcenter ?var - object)
+    (type_member_object__compiled ?var - object)
+    (type_member_ore ?var - object)
+    (type_member_package ?var - object)
+    (type_member_package_storage_position ?var - object)
+    (type_member_parcels ?var - object)
+    (type_member_perishable ?var - object)
+    (type_member_physical ?var - object)
+    (type_member_plane_ramp ?var - object)
+    (type_member_post_office ?var - object)
+    (type_member_rail_route ?var - object)
+    (type_member_refrigerated ?var - object)
+    (type_member_refrigerated_regular_traincar ?var - object)
+    (type_member_refrigerated_regular_truck ?var - object)
+    (type_member_refrigerated_tanker_traincar ?var - object)
+    (type_member_refrigerated_tanker_truck ?var - object)
+    (type_member_refrigerated_vehicle ?var - object)
+    (type_member_region ?var - object)
+    (type_member_regular ?var - object)
+    (type_member_regular_traincar ?var - object)
+    (type_member_regular_truck ?var - object)
+    (type_member_regular_vehicle ?var - object)
+    (type_member_road_route ?var - object)
+    (type_member_route ?var - object)
+    (type_member_sand ?var - object)
+    (type_member_speciality ?var - object)
+    (type_member_steel ?var - object)
+    (type_member_tcenter ?var - object)
+    (type_member_tanker ?var - object)
+    (type_member_tanker_traincar ?var - object)
+    (type_member_tanker_truck ?var - object)
+    (type_member_tanker_vehicle ?var - object)
+    (type_member_thing ?var - object)
+    (type_member_train ?var - object)
+    (type_member_train_station ?var - object)
+    (type_member_train_station_hub ?var - object)
+    (type_member_traincar ?var - object)
+    (type_member_truck ?var - object)
+    (type_member_valuable ?var - object)
+    (type_member_vehicle ?var - object)
+    (type_member_vehicle_position ?var - object)
+    (type_member_water ?var - object)
+    (At_Equipment ?var0 - equipment ?var1 - equipment_position)
+    (At_Package ?var0 - package ?var1 - package_storage_position)
+    (At_Vehicle ?var0 - vehicle ?var1 - vehicle_position)
+    (Available ?var0 - thing)
+    (Chute_Connected ?var0 - hopper_vehicle)
+    (City_Hazardous_Compatible ?var0 - city)
+    (Clean_Interior ?var0 - vehicle)
+    (Connected_To ?var0 - traincar ?var1 - train)
+    (Connects ?var0 - route ?var1 - location ?var2 - location)
+    (Decontaminated_Interior ?var0 - vehicle)
+    (Delivered ?var0 - package)
+    (Door_Open ?var0 - vehicle)
+    (Empty ?var0 - crane)
+    (Fees_Collected ?var0 - package)
+    (Guard_Inside ?var0 - armored)
+    (Guard_Outside ?var0 - armored)
+    (Have_Permit ?var0 - hazardous)
+    (Hose_Connected ?var0 - tanker_vehicle ?var1 - liquid)
+    (In_City ?var0 - city_location ?var1 - city)
+    (In_Region ?var0 - city ?var1 - region)
+    (Insured ?var0 - valuable)
+    (PV_Compatible ?var0 - package ?var1 - vehicle)
+    (RV_Compatible ?var0 - route ?var1 - vehicle)
+    (Ramp_Connected ?var0 - plane_ramp ?var1 - airplane)
+    (Ramp_Down ?var0 - vehicle)
+    (Serves ?var0 - tcenter ?var1 - location)
+    (Trough_Full ?var0 - livestock)
+    (Valve_Open ?var0 - tanker)
+    (Warning_Signs_Affixed ?var0 - vehicle)
+  )
+
+
+  (:task affix_warning_signs
+    :parameters (?fws_v - object)
+    (:method method1
+      :precondition (and
+        (type_member_vehicle ?fws_v)
+      )
+      :tasks (
+        (affix_warning_signs_primitive ?fws_v - vehicle)
+      )
+    )
+  )
+
+  (:task attach_conveyor_ramp
+    :parameters (?acr_ap - object ?acr_pr - object ?acr_l - object)
+    (:method method1
+      :precondition (and
+        (type_member_airplane ?acr_ap)
+        (type_member_plane_ramp ?acr_pr)
+        (type_member_location ?acr_l)
+      )
+      :tasks (
+        (attach_conveyor_ramp_primitive ?acr_ap - airplane ?acr_pr - plane_ramp ?acr_l - location)
+      )
+    )
+  )
+
+  (:task attach_train_car
+    :parameters (?atc_t - object ?atc_tc - object ?atc_l - object)
+    (:method method1
+      :precondition (and
+        (type_member_train ?atc_t)
+        (type_member_traincar ?atc_tc)
+        (type_member_location ?atc_l)
+      )
+      :tasks (
+        (attach_train_car_primitive ?atc_t - train ?atc_tc - traincar ?atc_l - location)
+      )
+    )
+  )
+
+  (:task close_door
+    :parameters (?cd_rv - object)
+    (:method method1
+      :precondition (and
+        (type_member_regular_vehicle ?cd_rv)
+      )
+      :tasks (
+        (close_door_primitive ?cd_rv - regular_vehicle)
+      )
+    )
+  )
+
+  (:task close_valve
+    :parameters (?cv_tv - object)
+    (:method method1
+      :precondition (and
+        (type_member_tanker_vehicle ?cv_tv)
+      )
+      :tasks (
+        (close_valve_primitive ?cv_tv - tanker_vehicle)
+      )
+    )
+  )
+
+  (:task collect_fees
+    :parameters (?cf_p - object)
+    (:method method1
+      :precondition (and
+        (type_member_package ?cf_p)
+      )
+      :tasks (
+        (collect_fees_primitive ?cf_p - package)
+      )
+    )
+  )
+
+  (:task collect_insurance
+    :parameters (?ci_v - object)
+    (:method method1
+      :precondition (and
+        (type_member_valuable ?ci_v)
+      )
+      :tasks (
+        (collect_insurance_primitive ?ci_v - valuable)
+      )
+    )
+  )
+
+  (:task connect_chute
+    :parameters (?cc_h - object)
+    (:method method1
+      :precondition (and
+        (type_member_hopper_vehicle ?cc_h)
+      )
+      :tasks (
+        (connect_chute_primitive ?cc_h - hopper_vehicle)
+      )
+    )
+  )
+
+  (:task connect_hose
+    :parameters (?ch_tv - object ?ch_l - object)
+    (:method method1
+      :precondition (and
+        (type_member_tanker_vehicle ?ch_tv)
+        (type_member_liquid ?ch_l)
+      )
+      :tasks (
+        (connect_hose_primitive ?ch_tv - tanker_vehicle ?ch_l - liquid)
+      )
+    )
+  )
+
+  (:task decontaminate_interior
+    :parameters (?di_v - object)
+    (:method method1
+      :precondition (and
+        (type_member_vehicle ?di_v)
+      )
+      :tasks (
+        (decontaminate_interior_primitive ?di_v - vehicle)
+      )
+    )
+  )
+
+  (:task deliver_h
+    :parameters (?dh_h - object)
+    (:method method1
+      :precondition (and
+        (type_member_hazardous ?dh_h)
+      )
+      :tasks (
+        (deliver_h_primitive ?dh_h - hazardous)
+      )
+    )
+  )
+
+  (:task deliver_p
+    :parameters (?dp_p - object)
+    (:method method1
+      :precondition (and
+        (type_member_package ?dp_p)
+      )
+      :tasks (
+        (deliver_p_primitive ?dp_p - package)
+      )
+    )
+  )
+
+  (:task deliver_v
+    :parameters (?dv_v - object)
+    (:method method1
+      :precondition (and
+        (type_member_valuable ?dv_v)
+      )
+      :tasks (
+        (deliver_v_primitive ?dv_v - valuable)
+      )
+    )
+  )
+
+  (:task detach_conveyor_ramp
+    :parameters (?dcr_ap - object ?dcr_pr - object ?dcr_l - object)
+    (:method method1
+      :precondition (and
+        (type_member_airplane ?dcr_ap)
+        (type_member_plane_ramp ?dcr_pr)
+        (type_member_location ?dcr_l)
+      )
+      :tasks (
+        (detach_conveyor_ramp_primitive ?dcr_ap - airplane ?dcr_pr - plane_ramp ?dcr_l - location)
+      )
+    )
+  )
+
+  (:task detach_train_car
+    :parameters (?dtc_t - object ?dtc_tc - object ?dtc_l - object)
+    (:method method1
+      :precondition (and
+        (type_member_train ?dtc_t)
+        (type_member_traincar ?dtc_tc)
+        (type_member_location ?dtc_l)
+      )
+      :tasks (
+        (detach_train_car_primitive ?dtc_t - train ?dtc_tc - traincar ?dtc_l - location)
+      )
+    )
+  )
+
+  (:task disconnect_chute
+    :parameters (?dc_h - object)
+    (:method method1
+      :precondition (and
+        (type_member_hopper_vehicle ?dc_h)
+      )
+      :tasks (
+        (disconnect_chute_primitive ?dc_h - hopper_vehicle)
+      )
+    )
+  )
+
+  (:task disconnect_hose
+    :parameters (?dch_tv - object ?dch_l - object)
+    (:method method1
+      :precondition (and
+        (type_member_tanker_vehicle ?dch_tv)
+        (type_member_liquid ?dch_l)
+      )
+      :tasks (
+        (disconnect_hose_primitive ?dch_tv - tanker_vehicle ?dch_l - liquid)
+      )
+    )
+  )
+
+  (:task do_clean_interior
+    :parameters (?cli_v - object)
+    (:method method1
+      :precondition (and
+        (type_member_vehicle ?cli_v)
+      )
+      :tasks (
+        (do_clean_interior_primitive ?cli_v - vehicle)
+      )
+    )
+  )
+
+  (:task empty_hopper
+    :parameters (?eh_p - object ?eh_hv - object ?eh_l - object)
+    (:method method1
+      :precondition (and
+        (type_member_package ?eh_p)
+        (type_member_hopper_vehicle ?eh_hv)
+        (type_member_location ?eh_l)
+      )
+      :tasks (
+        (empty_hopper_primitive ?eh_p - package ?eh_hv - hopper_vehicle ?eh_l - location)
+      )
+    )
+  )
+
+  (:task empty_tank
+    :parameters (?et_tv - object ?et_li - object ?et_lo - object)
+    (:method method1
+      :precondition (and
+        (type_member_tanker_vehicle ?et_tv)
+        (type_member_liquid ?et_li)
+        (type_member_location ?et_lo)
+      )
+      :tasks (
+        (empty_tank_primitive ?et_tv - tanker_vehicle ?et_li - liquid ?et_lo - location)
+      )
+    )
+  )
+
+  (:task fill_hopper
+    :parameters (?fh_p - object ?fh_hv - object ?fh_l - object)
+    (:method method1
+      :precondition (and
+        (type_member_package ?fh_p)
+        (type_member_hopper_vehicle ?fh_hv)
+        (type_member_location ?fh_l)
+      )
+      :tasks (
+        (fill_hopper_primitive ?fh_p - package ?fh_hv - hopper_vehicle ?fh_l - location)
+      )
+    )
+  )
+
+  (:task fill_tank
+    :parameters (?ft_tv - object ?ft_li - object ?ft_lo - object)
+    (:method method1
+      :precondition (and
+        (type_member_tanker_vehicle ?ft_tv)
+        (type_member_liquid ?ft_li)
+        (type_member_location ?ft_lo)
+      )
+      :tasks (
+        (fill_tank_primitive ?ft_tv - tanker_vehicle ?ft_li - liquid ?ft_lo - location)
+      )
+    )
+  )
+
+  (:task fill_trough
+    :parameters (?ftr_v - object)
+    (:method method1
+      :precondition (and
+        (type_member_livestock_vehicle ?ftr_v)
+      )
+      :tasks (
+        (fill_trough_primitive ?ftr_v - livestock_vehicle)
+      )
+    )
+  )
+
+  (:task go_through_tcenter_cc
+    :parameters (?gttc_lo - object ?gttc_ld - object ?gttc_co - object ?gttc_cd - object ?gttc_tc - object)
+    (:method method1
+      :precondition (and
+        (type_member_not_tcenter ?gttc_lo)
+        (type_member_not_tcenter ?gttc_ld)
+        (type_member_city ?gttc_co)
+        (type_member_city ?gttc_cd)
+        (type_member_tcenter ?gttc_tc)
+      )
+      :tasks (
+        (go_through_tcenter_cc_primitive ?gttc_lo - not_tcenter ?gttc_ld - not_tcenter ?gttc_co - city ?gttc_cd - city ?gttc_tc - tcenter)
+      )
+    )
+  )
+
+  (:task go_through_two_tcenters
+    :parameters (?gtttc_to - object ?gtttc_td - object)
+    (:method method1
+      :precondition (and
+        (type_member_tcenter ?gtttc_to)
+        (type_member_tcenter ?gtttc_td)
+      )
+      :tasks (
+        (go_through_two_tcenters_primitive ?gtttc_to - tcenter ?gtttc_td - tcenter)
+      )
+    )
+  )
+
+  (:task go_through_two_tcenters_cities_otd
+    :parameters (?gtttccotd_ld - object ?gtttccotd_co - object ?gtttccotd_cd - object ?gtttccotd_to - object ?gtttccotd_t1 - object)
+    (:method method1
+      :precondition (and
+        (type_member_not_tcenter ?gtttccotd_ld)
+        (type_member_city ?gtttccotd_co)
+        (type_member_city ?gtttccotd_cd)
+        (type_member_tcenter ?gtttccotd_to)
+        (type_member_tcenter ?gtttccotd_t1)
+      )
+      :tasks (
+        (go_through_two_tcenters_cities_otd_primitive ?gtttccotd_ld - not_tcenter ?gtttccotd_co - city ?gtttccotd_cd - city ?gtttccotd_to - tcenter ?gtttccotd_t1 - tcenter)
+      )
+    )
+  )
+
+  (:task go_through_two_tcenters_cities_ott
+    :parameters (?gtttccott_ld - object ?gtttccott_co - object ?gtttccott_cd - object ?gtttccott_to - object ?gtttccott_td - object)
+    (:method method1
+      :precondition (and
+        (type_member_city_location ?gtttccott_ld)
+        (type_member_city ?gtttccott_co)
+        (type_member_city ?gtttccott_cd)
+        (type_member_tcenter ?gtttccott_to)
+        (type_member_tcenter ?gtttccott_td)
+      )
+      :tasks (
+        (go_through_two_tcenters_cities_ott_primitive ?gtttccott_ld - city_location ?gtttccott_co - city ?gtttccott_cd - city ?gtttccott_to - tcenter ?gtttccott_td - tcenter)
+      )
+    )
+  )
+
+  (:task go_through_two_tcenters_cities_ottd
+    :parameters (?gtttcc_lo - object ?gtttcc_ld - object ?gtttcc_co - object ?gtttcc_cd - object ?gtttcc_t1 - object ?gtttcc_t2 - object)
+    (:method method1
+      :precondition (and
+        (type_member_not_tcenter ?gtttcc_lo)
+        (type_member_not_tcenter ?gtttcc_ld)
+        (type_member_city ?gtttcc_co)
+        (type_member_city ?gtttcc_cd)
+        (type_member_tcenter ?gtttcc_t1)
+        (type_member_tcenter ?gtttcc_t2)
+      )
+      :tasks (
+        (go_through_two_tcenters_cities_ottd_primitive ?gtttcc_lo - not_tcenter ?gtttcc_ld - not_tcenter ?gtttcc_co - city ?gtttcc_cd - city ?gtttcc_t1 - tcenter ?gtttcc_t2 - tcenter)
+      )
+    )
+  )
+
+  (:task go_through_two_tcenters_tt
+    :parameters (?gtttctt_to - object ?gtttctt_td - object ?gtttctt_co - object ?gtttctt_cd - object)
+    (:method method1
+      :precondition (and
+        (type_member_tcenter ?gtttctt_to)
+        (type_member_tcenter ?gtttctt_td)
+        (type_member_city ?gtttctt_co)
+        (type_member_city ?gtttctt_cd)
+      )
+      :tasks (
+        (go_through_two_tcenters_tt_primitive ?gtttctt_to - tcenter ?gtttctt_td - tcenter ?gtttctt_co - city ?gtttctt_cd - city)
+      )
+    )
+  )
+
+  (:task go_through_two_tcenters_via_hub_hazardous
+    :parameters (?gtttcvhh_to - object ?gtttcvhh_td - object ?gtttcvhh_h - object ?gtttcvhh_co - object ?gtttcvhh_ch - object ?gtttcvhh_cd - object ?gtttcvhh_ro - object ?gtttcvhh_rd - object)
+    (:method method1
+      :precondition (and
+        (type_member_tcenter ?gtttcvhh_to)
+        (type_member_tcenter ?gtttcvhh_td)
+        (type_member_hub ?gtttcvhh_h)
+        (type_member_city ?gtttcvhh_co)
+        (type_member_city ?gtttcvhh_ch)
+        (type_member_city ?gtttcvhh_cd)
+        (type_member_region ?gtttcvhh_ro)
+        (type_member_region ?gtttcvhh_rd)
+      )
+      :tasks (
+        (go_through_two_tcenters_via_hub_hazardous_primitive ?gtttcvhh_to - tcenter ?gtttcvhh_td - tcenter ?gtttcvhh_h - hub ?gtttcvhh_co - city ?gtttcvhh_ch - city ?gtttcvhh_cd - city ?gtttcvhh_ro - region ?gtttcvhh_rd - region)
+      )
+    )
+  )
+
+  (:task go_through_two_tcenters_via_hub_not_hazardous
+    :parameters (?gtttcvhnh_to - object ?gtttcvhnh_td - object ?gtttcvhnh_co - object ?gtttcvhnh_cd - object ?gtttcvhnh_ro - object ?gtttcvhnh_rd - object ?gtttcvhnh_h - object)
+    (:method method1
+      :precondition (and
+        (type_member_tcenter ?gtttcvhnh_to)
+        (type_member_tcenter ?gtttcvhnh_td)
+        (type_member_city ?gtttcvhnh_co)
+        (type_member_city ?gtttcvhnh_cd)
+        (type_member_region ?gtttcvhnh_ro)
+        (type_member_region ?gtttcvhnh_rd)
+        (type_member_hub ?gtttcvhnh_h)
+      )
+      :tasks (
+        (go_through_two_tcenters_via_hub_not_hazardous_primitive ?gtttcvhnh_to - tcenter ?gtttcvhnh_td - tcenter ?gtttcvhnh_co - city ?gtttcvhnh_cd - city ?gtttcvhnh_ro - region ?gtttcvhnh_rd - region ?gtttcvhnh_h - hub)
+      )
+    )
+  )
+
+  (:task load_cars
+    :parameters (?lc_c - object ?lc_v - object ?lc_l - object)
+    (:method method1
+      :precondition (and
+        (type_member_cars ?lc_c)
+        (type_member_auto_vehicle ?lc_v)
+        (type_member_location ?lc_l)
+      )
+      :tasks (
+        (load_cars_primitive ?lc_c - cars ?lc_v - auto_vehicle ?lc_l - location)
+      )
+    )
+  )
+
+  (:task load_livestock
+    :parameters (?ll_p - object ?ll_v - object ?ll_l - object)
+    (:method method1
+      :precondition (and
+        (type_member_livestock_package ?ll_p)
+        (type_member_livestock_vehicle ?ll_v)
+        (type_member_location ?ll_l)
+      )
+      :tasks (
+        (load_livestock_primitive ?ll_p - livestock_package ?ll_v - livestock_vehicle ?ll_l - location)
+      )
+    )
+  )
+
+  (:task load_package
+    :parameters (?lp_p - object ?lp_v - object ?lp_l - object)
+    (:method method1
+      :precondition (and
+        (type_member_package ?lp_p)
+        (type_member_vehicle ?lp_v)
+        (type_member_location ?lp_l)
+      )
+      :tasks (
+        (load_package_primitive ?lp_p - package ?lp_v - vehicle ?lp_l - location)
+      )
+    )
+  )
+
+  (:task lower_ramp
+    :parameters (?lr_v - object)
+    (:method method1
+      :precondition (and
+        (type_member_vehicle ?lr_v)
+      )
+      :tasks (
+        (lower_ramp_primitive ?lr_v - vehicle)
+      )
+    )
+  )
+
+  (:task move_vehicle_no_traincar
+    :parameters (?hmnt_v - object ?hmnt_o - object ?hmnt_r - object ?hmnt_d - object)
+    (:method method1
+      :precondition (and
+        (type_member_vehicle ?hmnt_v)
+        (type_member_location ?hmnt_o)
+        (type_member_route ?hmnt_r)
+        (type_member_location ?hmnt_d)
+      )
+      :tasks (
+        (move_vehicle_no_traincar_primitive ?hmnt_v - vehicle ?hmnt_o - location ?hmnt_r - route ?hmnt_d - location)
+      )
+    )
+  )
+
+  (:task obtain_permit
+    :parameters (?op_h - object)
+    (:method method1
+      :precondition (and
+        (type_member_hazardous ?op_h)
+      )
+      :tasks (
+        (obtain_permit_primitive ?op_h - hazardous)
+      )
+    )
+  )
+
+  (:task open_door
+    :parameters (?od_rv - object)
+    (:method method1
+      :precondition (and
+        (type_member_regular_vehicle ?od_rv)
+      )
+      :tasks (
+        (open_door_primitive ?od_rv - regular_vehicle)
+      )
+    )
+  )
+
+  (:task open_valve
+    :parameters (?ov_tv - object)
+    (:method method1
+      :precondition (and
+        (type_member_tanker_vehicle ?ov_tv)
+      )
+      :tasks (
+        (open_valve_primitive ?ov_tv - tanker_vehicle)
+      )
+    )
+  )
+
+  (:task pick_up_package_ground
+    :parameters (?pupg_p - object ?pupg_c - object ?pupg_l - object)
+    (:method method1
+      :precondition (and
+        (type_member_package ?pupg_p)
+        (type_member_crane ?pupg_c)
+        (type_member_location ?pupg_l)
+      )
+      :tasks (
+        (pick_up_package_ground_primitive ?pupg_p - package ?pupg_c - crane ?pupg_l - location)
+      )
+    )
+  )
+
+  (:task pick_up_package_vehicle
+    :parameters (?pupv_p - object ?pupv_c - object ?pupv_fv - object ?pupv_l - object)
+    (:method method1
+      :precondition (and
+        (type_member_package ?pupv_p)
+        (type_member_crane ?pupv_c)
+        (type_member_flatbed_vehicle ?pupv_fv)
+        (type_member_location ?pupv_l)
+      )
+      :tasks (
+        (pick_up_package_vehicle_primitive ?pupv_p - package ?pupv_c - crane ?pupv_fv - flatbed_vehicle ?pupv_l - location)
+      )
+    )
+  )
+
+  (:task post_guard_inside
+    :parameters (?pci_a - object)
+    (:method method1
+      :precondition (and
+        (type_member_armored ?pci_a)
+      )
+      :tasks (
+        (post_guard_inside_primitive ?pci_a - armored)
+      )
+    )
+  )
+
+  (:task post_guard_outside
+    :parameters (?pco_a - object)
+    (:method method1
+      :precondition (and
+        (type_member_armored ?pco_a)
+      )
+      :tasks (
+        (post_guard_outside_primitive ?pco_a - armored)
+      )
+    )
+  )
+
+  (:task put_down_package_ground
+    :parameters (?pdpg_p - object ?pdpg_c - object ?pdpg_l - object)
+    (:method method1
+      :precondition (and
+        (type_member_package ?pdpg_p)
+        (type_member_crane ?pdpg_c)
+        (type_member_location ?pdpg_l)
+      )
+      :tasks (
+        (put_down_package_ground_primitive ?pdpg_p - package ?pdpg_c - crane ?pdpg_l - location)
+      )
+    )
+  )
+
+  (:task put_down_package_vehicle
+    :parameters (?pdpv_p - object ?pdpv_c - object ?pdpv_fv - object ?pdpv_l - object)
+    (:method method1
+      :precondition (and
+        (type_member_package ?pdpv_p)
+        (type_member_crane ?pdpv_c)
+        (type_member_flatbed_vehicle ?pdpv_fv)
+        (type_member_location ?pdpv_l)
+      )
+      :tasks (
+        (put_down_package_vehicle_primitive ?pdpv_p - package ?pdpv_c - crane ?pdpv_fv - flatbed_vehicle ?pdpv_l - location)
+      )
+    )
+  )
+
+  (:task raise_ramp
+    :parameters (?rr_v - object)
+    (:method method1
+      :precondition (and
+        (type_member_vehicle ?rr_v)
+      )
+      :tasks (
+        (raise_ramp_primitive ?rr_v - vehicle)
+      )
+    )
+  )
+
+  (:task remove_guard
+    :parameters (?mc_a - object)
+    (:method method1
+      :precondition (and
+        (type_member_armored ?mc_a)
+      )
+      :tasks (
+        (remove_guard_primitive ?mc_a - armored)
+      )
+    )
+  )
+
+  (:task remove_warning_signs
+    :parameters (?mws_v - object)
+    (:method method1
+      :precondition (and
+        (type_member_vehicle ?mws_v)
+      )
+      :tasks (
+        (remove_warning_signs_primitive ?mws_v - vehicle)
+      )
+    )
+  )
+
+  (:task unload_cars
+    :parameters (?uc_c - object ?uc_v - object ?uc_l - object)
+    (:method method1
+      :precondition (and
+        (type_member_cars ?uc_c)
+        (type_member_auto_vehicle ?uc_v)
+        (type_member_location ?uc_l)
+      )
+      :tasks (
+        (unload_cars_primitive ?uc_c - cars ?uc_v - auto_vehicle ?uc_l - location)
+      )
+    )
+  )
+
+  (:task unload_livestock
+    :parameters (?ull_p - object ?ull_v - object ?ull_l - object)
+    (:method method1
+      :precondition (and
+        (type_member_livestock_package ?ull_p)
+        (type_member_livestock_vehicle ?ull_v)
+        (type_member_location ?ull_l)
+      )
+      :tasks (
+        (unload_livestock_primitive ?ull_p - livestock_package ?ull_v - livestock_vehicle ?ull_l - location)
+      )
+    )
+  )
+
+  (:task unload_package
+    :parameters (?up_p - object ?up_v - object ?up_l - object)
+    (:method method1
+      :precondition (and
+        (type_member_package ?up_p)
+        (type_member_vehicle ?up_v)
+        (type_member_location ?up_l)
+      )
+      :tasks (
+        (unload_package_primitive ?up_p - package ?up_v - vehicle ?up_l - location)
+      )
+    )
+  )
+
+  (:task goal_action
+    :parameters ()
+    (:method method1
+      :precondition (
+      )
+      :tasks (
+        (goal_action_primitive)
+      )
+    )
+  )
+
+; ************************************************************
+; ************************************************************
+  (:task carry
+    :parameters (?c_p - package ?c_lo - location ?c_ld - location)
+    (:method method7
+      :precondition (and
+        (type_member_package ?c_p - package)
+        (type_member_location ?c_lo - location)
+        (type_member_location ?c_ld - location)
+        (not (= ?c_lo ?c_ld))
+      )
+      :tasks (
+        (carry_direct ?c_p ?c_lo ?c_ld)
+      )
+    )
+    (:method method8
+      :precondition (and
+        (type_member_package ?c_p - package)
+        (type_member_tcenter ?c_lo - location)
+        (type_member_city ?helper_carry_tt_instance_2_argument_2 - city)
+        (type_member_tcenter ?c_ld - location)
+        (type_member_city ?helper_carry_tt_instance_2_argument_4 - city)
+        (not (type_member_hub ?c_lo))
+        (not (type_member_hub ?c_ld))
+        (not (= ?c_lo ?c_ld))
+        (type_member_tcenter ?c_lo)
+        (type_member_tcenter ?c_ld)
+      )
+      :tasks (
+        (helper_carry_tt ?c_p ?c_lo ?helper_carry_tt_instance_2_argument_2 ?c_ld ?helper_carry_tt_instance_2_argument_4)
+      )
+    )
+    (:method method10
+      :precondition (and
+        (type_member_package ?c_p - package)
+        (type_member_city_location ?c_lo - location)
+        (type_member_city ?helper_carry_ott_instance_2_argument_2 - city)
+        (type_member_tcenter ?helper_carry_ott_instance_2_argument_3 - tcenter)
+        (type_member_tcenter ?c_ld - location)
+        (type_member_city ?helper_carry_ott_instance_2_argument_5 - city)
+        (not (type_member_tcenter ?c_lo))
+        (not (= ?helper_carry_ott_instance_2_argument_2 ?helper_carry_ott_instance_2_argument_5))
+        (not (= ?c_lo ?c_ld))
+        (type_member_city_location ?c_lo)
+        (type_member_tcenter ?c_ld)
+      )
+      :tasks (
+        (helper_carry_ott ?c_p ?c_lo ?helper_carry_ott_instance_2_argument_2 ?helper_carry_ott_instance_2_argument_3 ?c_ld ?helper_carry_ott_instance_2_argument_5)
+      )
+    )
+    (:method method12
+      :precondition (and
+        (type_member_package ?c_p - package)
+        (type_member_tcenter ?c_lo - location)
+        (type_member_city ?helper_carry_otd_instance_2_argument_2 - city)
+        (type_member_tcenter ?helper_carry_otd_instance_2_argument_3 - tcenter)
+        (type_member_not_tcenter ?c_ld - location)
+        (type_member_city ?helper_carry_otd_instance_2_argument_5 - city)
+        (not (= ?c_lo ?c_ld))
+        (not (= ?c_lo ?helper_carry_otd_instance_2_argument_3))
+        (not (= ?c_ld ?helper_carry_otd_instance_2_argument_3))
+        (type_member_tcenter ?c_lo)
+        (type_member_not_tcenter ?c_ld)
+      )
+      :tasks (
+        (helper_carry_otd ?c_p ?c_lo ?helper_carry_otd_instance_2_argument_2 ?helper_carry_otd_instance_2_argument_3 ?c_ld ?helper_carry_otd_instance_2_argument_5)
+      )
+    )
+    (:method method14
+      :precondition (and
+        (type_member_package ?c_p - package)
+        (type_member_not_tcenter ?c_lo - location)
+        (type_member_city ?helper_carry_ottd_instance_2_argument_2 - city)
+        (type_member_tcenter ?helper_carry_ottd_instance_2_argument_3 - tcenter)
+        (type_member_tcenter ?helper_carry_ottd_instance_2_argument_4 - tcenter)
+        (type_member_not_tcenter ?c_ld - location)
+        (type_member_city ?helper_carry_ottd_instance_2_argument_6 - city)
+        (not (= ?c_lo ?c_ld))
+        (not (= ?c_lo ?helper_carry_ottd_instance_2_argument_3))
+        (not (= ?c_ld ?helper_carry_ottd_instance_2_argument_3))
+        (not (= ?c_lo ?helper_carry_ottd_instance_2_argument_4))
+        (not (= ?c_ld ?helper_carry_ottd_instance_2_argument_4))
+        (type_member_not_tcenter ?c_lo)
+        (type_member_not_tcenter ?c_ld)
+      )
+      :tasks (
+        (helper_carry_ottd ?c_p ?c_lo ?helper_carry_ottd_instance_2_argument_2 ?helper_carry_ottd_instance_2_argument_3 ?helper_carry_ottd_instance_2_argument_4 ?c_ld ?helper_carry_ottd_instance_2_argument_6)
+      )
+    )
+    (:method method16
+      :precondition (and
+        (type_member_package ?c_p - package)
+        (type_member_not_tcenter ?c_lo - location)
+        (type_member_city ?helper_carry_cc_instance_2_argument_2 - city)
+        (type_member_tcenter ?helper_carry_cc_instance_2_argument_3 - tcenter)
+        (type_member_not_tcenter ?c_ld - location)
+        (type_member_city ?helper_carry_cc_instance_2_argument_5 - city)
+        (not (= ?c_lo ?c_ld))
+        (type_member_not_tcenter ?c_lo)
+        (type_member_not_tcenter ?c_ld)
+      )
+      :tasks (
+        (helper_carry_cc ?c_p ?c_lo ?helper_carry_cc_instance_2_argument_2 ?helper_carry_cc_instance_2_argument_3 ?c_ld ?helper_carry_cc_instance_2_argument_5)
+      )
+    )
+  )
+
+  (:task carry_between_tcenters
+    :parameters (?cbt_p - package ?cbt_tco - tcenter ?cbt_tcd - tcenter)
+    (:method method18
+      :precondition (and
+        (type_member_package ?cbt_p - package)
+        (type_member_tcenter ?cbt_tco - tcenter)
+        (type_member_tcenter ?cbt_tcd - tcenter)
+        (not (= ?cbt_tco ?cbt_tcd))
+      )
+      :tasks (
+        (carry_direct ?cbt_p ?cbt_tco ?cbt_tcd)
+        (go_through_two_tcenters ?cbt_tco ?cbt_tcd)
+      )
+    )
+    (:method method19
+      :precondition (and
+        (type_member_package ?cbt_p - package)
+        (type_member_tcenter ?cbt_tco - tcenter)
+        (type_member_tcenter ?cbt_tcd - tcenter)
+        (not (type_member_hub ?cbt_tco))
+        (not (type_member_hub ?cbt_tcd))
+        (not (= ?cbt_tco ?cbt_tcd))
+      )
+      :tasks (
+        (carry_via_hub ?cbt_p ?cbt_tco ?cbt_tcd)
+      )
+    )
+  )
+
+  (:task carry_direct
+    :parameters (?cd_p - package ?cd_lo - location ?cd_ld - location)
+    (:method method24
+      :precondition (and
+        (type_member_vehicle ?helper_carry_direct_instance_2_argument_0 - vehicle)
+        (type_member_package ?cd_p - package)
+        (type_member_location ?cd_lo - location)
+        (type_member_location ?cd_ld - location)
+        (not (= ?cd_lo ?cd_ld))
+      )
+      :tasks (
+        (helper_carry_direct ?helper_carry_direct_instance_2_argument_0 ?cd_p ?cd_lo ?cd_ld)
+      )
+    )
+  )
+
+  (:task carry_via_hub
+    :parameters (?tch_p - package ?tch_tco - tcenter ?tch_tcd - tcenter)
+    (:method method20
+      :precondition (and
+        (type_member_package ?tch_p - package)
+        (type_member_tcenter ?tch_tco - tcenter)
+        (type_member_city ?helper_carry_via_hub_not_hazardous_instance_2_argument_2 - city)
+        (type_member_region ?helper_carry_via_hub_not_hazardous_instance_2_argument_3 - region)
+        (type_member_hub ?helper_carry_via_hub_not_hazardous_instance_2_argument_4 - hub)
+        (type_member_tcenter ?tch_tcd - tcenter)
+        (type_member_city ?helper_carry_via_hub_not_hazardous_instance_2_argument_6 - city)
+        (type_member_region ?helper_carry_via_hub_not_hazardous_instance_2_argument_7 - region)
+        (not (type_member_hazardous ?tch_p))
+        (not (= ?tch_tco ?tch_tcd))
+        (not (= ?tch_tco ?helper_carry_via_hub_not_hazardous_instance_2_argument_4))
+        (not (= ?tch_tcd ?helper_carry_via_hub_not_hazardous_instance_2_argument_4))
+      )
+      :tasks (
+        (helper_carry_via_hub_not_hazardous ?tch_p ?tch_tco ?helper_carry_via_hub_not_hazardous_instance_2_argument_2 ?helper_carry_via_hub_not_hazardous_instance_2_argument_3 ?helper_carry_via_hub_not_hazardous_instance_2_argument_4 ?tch_tcd ?helper_carry_via_hub_not_hazardous_instance_2_argument_6 ?helper_carry_via_hub_not_hazardous_instance_2_argument_7)
+      )
+    )
+    (:method method22
+      :precondition (and
+        (type_member_package ?tch_p - package)
+        (type_member_tcenter ?tch_tco - tcenter)
+        (type_member_city ?helper_carry_via_hub_hazardous_instance_2_argument_2 - city)
+        (type_member_region ?helper_carry_via_hub_hazardous_instance_2_argument_3 - region)
+        (type_member_hub ?helper_carry_via_hub_hazardous_instance_2_argument_4 - hub)
+        (type_member_city ?helper_carry_via_hub_hazardous_instance_2_argument_5 - city)
+        (type_member_tcenter ?tch_tcd - tcenter)
+        (type_member_city ?helper_carry_via_hub_hazardous_instance_2_argument_7 - city)
+        (type_member_region ?helper_carry_via_hub_hazardous_instance_2_argument_8 - region)
+        (type_member_hazardous ?tch_p)
+        (not (= ?tch_tco ?tch_tcd))
+        (not (= ?tch_tco ?helper_carry_via_hub_hazardous_instance_2_argument_4))
+        (not (= ?tch_tcd ?helper_carry_via_hub_hazardous_instance_2_argument_4))
+      )
+      :tasks (
+        (helper_carry_via_hub_hazardous ?tch_p ?tch_tco ?helper_carry_via_hub_hazardous_instance_2_argument_2 ?helper_carry_via_hub_hazardous_instance_2_argument_3 ?helper_carry_via_hub_hazardous_instance_2_argument_4 ?helper_carry_via_hub_hazardous_instance_2_argument_5 ?tch_tcd ?helper_carry_via_hub_hazardous_instance_2_argument_7 ?helper_carry_via_hub_hazardous_instance_2_argument_8)
+      )
+    )
+  )
+
+  (:task deliver
+    :parameters (?d_p - package)
+    (:method method4
+      :precondition (and
+        (type_member_package ?d_p - package)
+        (not (type_member_hazardous ?d_p))
+        (not (type_member_valuable ?d_p))
+      )
+      :tasks (
+        (deliver_p ?d_p)
+      )
+    )
+    (:method method5
+      :precondition (and
+        (type_member_valuable ?d_p - package)
+        (type_member_valuable ?d_p)
+      )
+      :tasks (
+        (deliver_v ?d_p)
+      )
+    )
+    (:method method6
+      :precondition (and
+        (type_member_hazardous ?d_p - package)
+        (type_member_hazardous ?d_p)
+      )
+      :tasks (
+        (deliver_h ?d_p)
+      )
+    )
+  )
+
+  (:task helper_carry_cc
+    :parameters (?hccc_p - package ?hccc_o - not_tcenter ?hccc_co - city ?hccc_t - tcenter ?hccc_d - not_tcenter ?hccc_cd - city)
+    (:method method17
+      :precondition (and
+        (type_member_package ?hccc_p - package)
+        (type_member_not_tcenter ?hccc_o - not_tcenter)
+        (type_member_not_tcenter ?hccc_d - not_tcenter)
+        (type_member_city ?hccc_co - city)
+        (type_member_city ?hccc_cd - city)
+        (type_member_tcenter ?hccc_t - tcenter)
+        (not (= ?hccc_o ?hccc_d))
+        (not (= ?hccc_co ?hccc_cd))
+      )
+      :tasks (
+        (carry_direct ?hccc_p ?hccc_o ?hccc_t)
+        (go_through_tcenter_cc ?hccc_o ?hccc_d ?hccc_co ?hccc_cd ?hccc_t)
+        (carry_direct ?hccc_p ?hccc_t ?hccc_d)
+      )
+    )
+  )
+
+  (:task helper_carry_direct
+    :parameters (?hcd_v - vehicle ?hcd_p - package ?hcd_o - location ?hcd_d - location)
+    (:method method25
+      :precondition (and
+        (type_member_location ?move_instance_2_argument_1 - location)
+        (type_member_location ?hcd_o - location)
+        (type_member_vehicle ?hcd_v - vehicle)
+        (type_member_location ?hcd_d - location)
+        (type_member_package ?hcd_p - package)
+        (not (= ?move_instance_2_argument_1 ?hcd_o))
+        (not (= ?hcd_o ?hcd_d))
+      )
+      :tasks (
+        (move ?hcd_v ?move_instance_2_argument_1 ?hcd_o)
+        (load_top ?hcd_p ?hcd_v ?hcd_o)
+        (move ?hcd_v ?hcd_o ?hcd_d)
+        (unload_top ?hcd_p ?hcd_v ?hcd_d)
+      )
+    )
+    (:method method26
+      :precondition (and
+        (type_member_location ?hcd_o - location)
+        (type_member_package ?hcd_p - package)
+        (type_member_vehicle ?hcd_v - vehicle)
+        (type_member_location ?hcd_d - location)
+        (not (= ?hcd_o ?hcd_d))
+      )
+      :tasks (
+        (load_top ?hcd_p ?hcd_v ?hcd_o)
+        (move ?hcd_v ?hcd_o ?hcd_d)
+        (unload_top ?hcd_p ?hcd_v ?hcd_d)
+      )
+    )
+  )
+
+  (:task helper_carry_otd
+    :parameters (?hcotd_p - package ?hcotd_o - tcenter ?hcotd_co - city ?hcotd_t1 - tcenter ?hcotd_d - not_tcenter ?hcotd_cd - city)
+    (:method method13
+      :precondition (and
+        (type_member_package ?hcotd_p - package)
+        (type_member_not_tcenter ?hcotd_d - not_tcenter)
+        (type_member_city ?hcotd_co - city)
+        (type_member_city ?hcotd_cd - city)
+        (type_member_tcenter ?hcotd_o - tcenter)
+        (type_member_tcenter ?hcotd_t1 - tcenter)
+        (not (= ?hcotd_co ?hcotd_cd))
+        (not (= ?hcotd_o ?hcotd_t1))
+      )
+      :tasks (
+        (carry_between_tcenters ?hcotd_p ?hcotd_o ?hcotd_t1)
+        (go_through_two_tcenters_cities_otd ?hcotd_d ?hcotd_co ?hcotd_cd ?hcotd_o ?hcotd_t1)
+        (carry_direct ?hcotd_p ?hcotd_t1 ?hcotd_d)
+      )
+    )
+  )
+
+  (:task helper_carry_ott
+    :parameters (?hcott_p - package ?hcott_o - city_location ?hcott_co - city ?hcott_t1 - tcenter ?hcott_d - tcenter ?hcott_cd - city)
+    (:method method11
+      :precondition (and
+        (type_member_package ?hcott_p - package)
+        (type_member_city_location ?hcott_o - city_location)
+        (type_member_city ?hcott_co - city)
+        (type_member_city ?hcott_cd - city)
+        (type_member_tcenter ?hcott_t1 - tcenter)
+        (type_member_tcenter ?hcott_d - tcenter)
+        (not (= ?hcott_co ?hcott_cd))
+      )
+      :tasks (
+        (carry_direct ?hcott_p ?hcott_o ?hcott_t1)
+        (go_through_two_tcenters_cities_ott ?hcott_o ?hcott_co ?hcott_cd ?hcott_t1 ?hcott_d)
+        (carry_between_tcenters ?hcott_p ?hcott_t1 ?hcott_d)
+      )
+    )
+  )
+
+  (:task helper_carry_ottd
+    :parameters (?hcottd_p - package ?hcottd_o - not_tcenter ?hcottd_co - city ?hcottd_t1 - tcenter ?hcottd_t2 - tcenter ?hcottd_d - not_tcenter ?hcottd_cd - city)
+    (:method method15
+      :precondition (and
+        (type_member_package ?hcottd_p - package)
+        (type_member_not_tcenter ?hcottd_o - not_tcenter)
+        (type_member_not_tcenter ?hcottd_d - not_tcenter)
+        (type_member_city ?hcottd_co - city)
+        (type_member_city ?hcottd_cd - city)
+        (type_member_tcenter ?hcottd_t1 - tcenter)
+        (type_member_tcenter ?hcottd_t2 - tcenter)
+        (not (= ?hcottd_o ?hcottd_d))
+        (not (= ?hcottd_t1 ?hcottd_t2))
+        (not (= ?hcottd_co ?hcottd_cd))
+      )
+      :tasks (
+        (carry_direct ?hcottd_p ?hcottd_o ?hcottd_t1)
+        (go_through_two_tcenters_cities_ottd ?hcottd_o ?hcottd_d ?hcottd_co ?hcottd_cd ?hcottd_t1 ?hcottd_t2)
+        (carry_between_tcenters ?hcottd_p ?hcottd_t1 ?hcottd_t2)
+        (carry_direct ?hcottd_p ?hcottd_t2 ?hcottd_d)
+      )
+    )
+  )
+
+  (:task helper_carry_tt
+    :parameters (?hctt_p - package ?hctt_o - tcenter ?hctt_co - city ?hctt_d - tcenter ?hctt_cd - city)
+    (:method method9
+      :precondition (and
+        (type_member_package ?hctt_p - package)
+        (type_member_tcenter ?hctt_o - tcenter)
+        (type_member_tcenter ?hctt_d - tcenter)
+        (type_member_city ?hctt_co - city)
+        (type_member_city ?hctt_cd - city)
+        (not (= ?hctt_o ?hctt_d))
+        (not (= ?hctt_co ?hctt_cd))
+      )
+      :tasks (
+        (carry_via_hub ?hctt_p ?hctt_o ?hctt_d)
+        (go_through_two_tcenters_tt ?hctt_o ?hctt_d ?hctt_co ?hctt_cd)
+      )
+    )
+  )
+
+  (:task helper_carry_via_hub_hazardous
+    :parameters (?hcvhh_p - package ?hcvhh_tco - tcenter ?hcvhh_ctco - city ?hcvhh_rctco - region ?hcvhh_h - hub ?hcvhh_ch - city ?hcvhh_tcd - tcenter ?hcvhh_ctcd - city ?hcvhh_rctcd - region)
+    (:method method23
+      :precondition (and
+        (type_member_package ?hcvhh_p - package)
+        (type_member_region ?hcvhh_rctcd - region)
+        (type_member_tcenter ?hcvhh_tco - tcenter)
+        (type_member_tcenter ?hcvhh_tcd - tcenter)
+        (type_member_hub ?hcvhh_h - hub)
+        (type_member_city ?hcvhh_ctco - city)
+        (type_member_city ?hcvhh_ch - city)
+        (type_member_city ?hcvhh_ctcd - city)
+        (type_member_region ?hcvhh_rctco - region)
+        (not (= ?hcvhh_tco ?hcvhh_tcd))
+        (not (= ?hcvhh_tco ?hcvhh_h))
+        (not (= ?hcvhh_h ?hcvhh_tcd))
+        (not (= ?hcvhh_ctco ?hcvhh_ch))
+        (not (= ?hcvhh_ctco ?hcvhh_ctcd))
+        (not (= ?hcvhh_ch ?hcvhh_ctcd))
+        (not (= ?hcvhh_rctco ?hcvhh_rctcd))
+      )
+      :tasks (
+        (carry_direct ?hcvhh_p ?hcvhh_tco ?hcvhh_h)
+        (go_through_two_tcenters_via_hub_hazardous ?hcvhh_tco ?hcvhh_tcd ?hcvhh_h ?hcvhh_ctco ?hcvhh_ch ?hcvhh_ctcd ?hcvhh_rctco ?hcvhh_rctcd)
+        (carry_direct ?hcvhh_p ?hcvhh_h ?hcvhh_tcd)
+      )
+    )
+  )
+
+  (:task helper_carry_via_hub_not_hazardous
+    :parameters (?hcvhn_p - package ?hcvhn_tco - tcenter ?hcvhn_ctco - city ?hcvhn_rctco - region ?hcvhn_h - hub ?hcvhn_tcd - tcenter ?hcvhn_ctcd - city ?hcvhn_rctcd - region)
+    (:method method21
+      :precondition (and
+        (type_member_package ?hcvhn_p - package)
+        (type_member_tcenter ?hcvhn_tco - tcenter)
+        (type_member_tcenter ?hcvhn_tcd - tcenter)
+        (type_member_city ?hcvhn_ctco - city)
+        (type_member_city ?hcvhn_ctcd - city)
+        (type_member_region ?hcvhn_rctco - region)
+        (type_member_region ?hcvhn_rctcd - region)
+        (type_member_hub ?hcvhn_h - hub)
+        (not (= ?hcvhn_tco ?hcvhn_tcd))
+        (not (= ?hcvhn_tco ?hcvhn_h))
+        (not (= ?hcvhn_h ?hcvhn_tcd))
+        (not (= ?hcvhn_ctco ?hcvhn_ctcd))
+        (not (= ?hcvhn_rctco ?hcvhn_rctcd))
+      )
+      :tasks (
+        (carry_direct ?hcvhn_p ?hcvhn_tco ?hcvhn_h)
+        (go_through_two_tcenters_via_hub_not_hazardous ?hcvhn_tco ?hcvhn_tcd ?hcvhn_ctco ?hcvhn_ctcd ?hcvhn_rctco ?hcvhn_rctcd ?hcvhn_h)
+        (carry_direct ?hcvhn_p ?hcvhn_h ?hcvhn_tcd)
+      )
+    )
+  )
+
+  (:task helper_move_traincar
+    :parameters (?hmt_v - traincar ?hmt_t - train ?hmt_o - location ?hmt_d - location)
+    (:method method29
+      :precondition (and
+        (type_member_traincar ?hmt_v - traincar)
+        (type_member_location ?hmt_d - location)
+        (type_member_train ?hmt_t - train)
+        (type_member_location ?move_instance_2_argument_1 - location)
+        (type_member_location ?hmt_o - location)
+        (not (= ?hmt_o ?hmt_d))
+        (not (= ?move_instance_2_argument_1 ?hmt_o))
+      )
+      :tasks (
+        (move ?hmt_t ?move_instance_2_argument_1 ?hmt_o)
+        (attach_train_car ?hmt_t ?hmt_v ?hmt_o)
+        (move ?hmt_t ?hmt_o ?hmt_d)
+        (detach_train_car ?hmt_t ?hmt_v ?hmt_d)
+      )
+    )
+    (:method method30
+      :precondition (and
+        (type_member_train ?hmt_t - train)
+        (type_member_traincar ?hmt_v - traincar)
+        (type_member_location ?hmt_d - location)
+        (type_member_location ?hmt_o - location)
+        (not (= ?hmt_o ?hmt_d))
+      )
+      :tasks (
+        (attach_train_car ?hmt_t ?hmt_v ?hmt_o)
+        (move ?hmt_t ?hmt_o ?hmt_d)
+        (detach_train_car ?hmt_t ?hmt_v ?hmt_d)
+      )
+    )
+  )
+
+  (:task load
+    :parameters (?l_p - package ?l_v - vehicle ?l_l - location)
+    (:method method44
+      :precondition (and
+        (type_member_regular_vehicle ?l_v - vehicle)
+        (type_member_package ?l_p - package)
+        (type_member_location ?l_l - location)
+        (type_member_regular ?l_p)
+        (not (type_member_airplane ?l_v))
+        (type_member_regular_vehicle ?l_v)
+      )
+      :tasks (
+        (open_door ?l_v)
+        (load_package ?l_p ?l_v ?l_l)
+        (close_door ?l_v)
+      )
+    )
+    (:method method45
+      :precondition (and
+        (type_member_package ?l_p - package)
+        (type_member_crane ?put_down_package_vehicle_instance_3_argument_4 - crane)
+        (type_member_flatbed_vehicle ?l_v - vehicle)
+        (type_member_location ?l_l - location)
+        (type_member_bulky ?l_p)
+        (type_member_flatbed_vehicle ?l_v)
+      )
+      :tasks (
+        (pick_up_package_ground ?l_p ?put_down_package_vehicle_instance_3_argument_4 ?l_l)
+        (put_down_package_vehicle ?l_p ?put_down_package_vehicle_instance_3_argument_4 ?l_v ?l_l)
+      )
+    )
+    (:method method46
+      :precondition (and
+        (type_member_hopper_vehicle ?l_v - vehicle)
+        (type_member_package ?l_p - package)
+        (type_member_location ?l_l - location)
+        (type_member_hopper_vehicle ?l_v)
+      )
+      :tasks (
+        (connect_chute ?l_v)
+        (fill_hopper ?l_p ?l_v ?l_l)
+        (disconnect_chute ?l_v)
+      )
+    )
+    (:method method47
+      :precondition (and
+        (type_member_tanker_vehicle ?l_v - vehicle)
+        (type_member_liquid ?l_p - package)
+        (type_member_location ?l_l - location)
+        (type_member_liquid ?l_p)
+        (type_member_tanker_vehicle ?l_v)
+      )
+      :tasks (
+        (connect_hose ?l_v ?l_p)
+        (open_valve ?l_v)
+        (fill_tank ?l_v ?l_p ?l_l)
+        (close_valve ?l_v)
+        (disconnect_hose ?l_v ?l_p)
+      )
+    )
+    (:method method48
+      :precondition (and
+        (type_member_livestock_package ?l_p - package)
+        (type_member_location ?l_l - location)
+        (type_member_vehicle ?l_v - vehicle)
+        (type_member_livestock_package ?l_p)
+      )
+      :tasks (
+        (lower_ramp ?l_v)
+        (fill_trough ?l_v)
+        (load_livestock ?l_p ?l_v ?l_l)
+        (raise_ramp ?l_v)
+      )
+    )
+    (:method method49
+      :precondition (and
+        (type_member_cars ?l_p - package)
+        (type_member_location ?l_l - location)
+        (type_member_vehicle ?l_v - vehicle)
+        (type_member_cars ?l_p)
+      )
+      :tasks (
+        (lower_ramp ?l_v)
+        (load_cars ?l_p ?l_v ?l_l)
+        (raise_ramp ?l_v)
+      )
+    )
+    (:method method50
+      :precondition (and
+        (type_member_location ?l_l - location)
+        (type_member_airplane ?l_v - vehicle)
+        (type_member_plane_ramp ?detach_conveyor_ramp_instance_6_argument_9 - plane_ramp)
+        (type_member_package ?l_p - package)
+        (type_member_regular ?l_p)
+        (type_member_airplane ?l_v)
+      )
+      :tasks (
+        (attach_conveyor_ramp ?l_v ?detach_conveyor_ramp_instance_6_argument_9 ?l_l)
+        (open_door ?l_v)
+        (load_package ?l_p ?l_v ?l_l)
+        (close_door ?l_v)
+        (detach_conveyor_ramp ?l_v ?detach_conveyor_ramp_instance_6_argument_9 ?l_l)
+      )
+    )
+  )
+
+  (:task load_top
+    :parameters (?lt_p - package ?lt_v - vehicle ?lt_l - location)
+    (:method method38
+      :precondition (and
+        (type_member_package ?lt_p - package)
+        (type_member_vehicle ?lt_v - vehicle)
+        (type_member_location ?lt_l - location)
+        (not (type_member_valuable ?lt_p))
+        (not (type_member_hazardous ?lt_p))
+      )
+      :tasks (
+        (load ?lt_p ?lt_v ?lt_l)
+      )
+    )
+    (:method method39
+      :precondition (and
+        (type_member_package ?lt_p - package)
+        (type_member_vehicle ?lt_v - vehicle)
+        (type_member_location ?lt_l - location)
+        (type_member_hazardous ?lt_p)
+      )
+      :tasks (
+        (affix_warning_signs ?lt_v)
+        (load ?lt_p ?lt_v ?lt_l)
+      )
+    )
+    (:method method40
+      :precondition (and
+        (type_member_package ?lt_p - package)
+        (type_member_location ?lt_l - location)
+        (type_member_armored ?lt_v - vehicle)
+        (type_member_valuable ?lt_p)
+        (type_member_armored ?lt_v)
+      )
+      :tasks (
+        (post_guard_outside ?lt_v)
+        (load ?lt_p ?lt_v ?lt_l)
+        (post_guard_inside ?lt_v)
+      )
+    )
+  )
+
+  (:task move
+    :parameters (?m_v - vehicle ?m_lo - location ?m_ld - location)
+    (:method method27
+      :precondition (and
+        (type_member_vehicle ?m_v - vehicle)
+        (type_member_location ?m_lo - location)
+        (type_member_route ?move_vehicle_no_traincar_instance_2_argument_2 - route)
+        (type_member_location ?m_ld - location)
+        (not (type_member_traincar ?m_v))
+        (not (= ?m_lo ?m_ld))
+      )
+      :tasks (
+        (move_vehicle_no_traincar ?m_v ?m_lo ?move_vehicle_no_traincar_instance_2_argument_2 ?m_ld)
+      )
+    )
+    (:method method28
+      :precondition (and
+        (type_member_traincar ?m_v - vehicle)
+        (type_member_train ?helper_move_traincar_instance_2_argument_1 - train)
+        (type_member_location ?m_lo - location)
+        (type_member_location ?m_ld - location)
+        (not (= ?m_lo ?m_ld))
+        (type_member_traincar ?m_v)
+      )
+      :tasks (
+        (helper_move_traincar ?m_v ?helper_move_traincar_instance_2_argument_1 ?m_lo ?m_ld)
+      )
+    )
+  )
+
+  (:task pickup
+    :parameters (?p_p - package)
+    (:method method1
+      :precondition (and
+        (type_member_package ?p_p - package)
+        (not (type_member_hazardous ?p_p))
+        (not (type_member_valuable ?p_p))
+      )
+      :tasks (
+        (collect_fees ?p_p)
+      )
+    )
+    (:method method2
+      :precondition (and
+        (type_member_hazardous ?p_p - package)
+        (type_member_hazardous ?p_p)
+      )
+      :tasks (
+        (collect_fees ?p_p)
+        (obtain_permit ?p_p)
+      )
+    )
+    (:method method3
+      :precondition (and
+        (type_member_valuable ?p_p - package)
+        (type_member_valuable ?p_p)
+      )
+      :tasks (
+        (collect_fees ?p_p)
+        (collect_insurance ?p_p)
+      )
+    )
+  )
+
+  (:task transport
+    :parameters (?t_p - package ?t_lo - location ?t_ld - location)
+    (:method method0
+      :precondition (and
+        (type_member_location ?t_lo - location)
+        (type_member_location ?t_ld - location)
+        (type_member_package ?t_p - package)
+        (not (= ?t_lo ?t_ld))
+      )
+      :tasks (
+        (pickup ?t_p)
+        (carry ?t_p ?t_lo ?t_ld)
+        (deliver ?t_p)
+      )
+    )
+  )
+
+  (:task unload
+    :parameters (?ul_p - package ?ul_v - vehicle ?ul_l - location)
+    (:method method31
+      :precondition (and
+        (type_member_regular_vehicle ?ul_v - vehicle)
+        (type_member_package ?ul_p - package)
+        (type_member_location ?ul_l - location)
+        (type_member_regular ?ul_p)
+        (not (type_member_airplane ?ul_v))
+        (type_member_regular_vehicle ?ul_v)
+      )
+      :tasks (
+        (open_door ?ul_v)
+        (unload_package ?ul_p ?ul_v ?ul_l)
+        (close_door ?ul_v)
+      )
+    )
+    (:method method32
+      :precondition (and
+        (type_member_flatbed_vehicle ?ul_v - vehicle)
+        (type_member_package ?ul_p - package)
+        (type_member_crane ?put_down_package_ground_instance_3_argument_5 - crane)
+        (type_member_location ?ul_l - location)
+        (type_member_bulky ?ul_p)
+        (type_member_flatbed_vehicle ?ul_v)
+      )
+      :tasks (
+        (pick_up_package_vehicle ?ul_p ?put_down_package_ground_instance_3_argument_5 ?ul_v ?ul_l)
+        (put_down_package_ground ?ul_p ?put_down_package_ground_instance_3_argument_5 ?ul_l)
+      )
+    )
+    (:method method33
+      :precondition (and
+        (type_member_hopper_vehicle ?ul_v - vehicle)
+        (type_member_package ?ul_p - package)
+        (type_member_location ?ul_l - location)
+        (type_member_hopper_vehicle ?ul_v)
+      )
+      :tasks (
+        (connect_chute ?ul_v)
+        (empty_hopper ?ul_p ?ul_v ?ul_l)
+        (disconnect_chute ?ul_v)
+      )
+    )
+    (:method method34
+      :precondition (and
+        (type_member_tanker_vehicle ?ul_v - vehicle)
+        (type_member_liquid ?ul_p - package)
+        (type_member_location ?ul_l - location)
+        (type_member_liquid ?ul_p)
+        (type_member_tanker_vehicle ?ul_v)
+      )
+      :tasks (
+        (connect_hose ?ul_v ?ul_p)
+        (open_valve ?ul_v)
+        (empty_tank ?ul_v ?ul_p ?ul_l)
+        (close_valve ?ul_v)
+        (disconnect_hose ?ul_v ?ul_p)
+      )
+    )
+    (:method method35
+      :precondition (and
+        (type_member_vehicle ?ul_v - vehicle)
+        (type_member_livestock_package ?ul_p - package)
+        (type_member_location ?ul_l - location)
+        (type_member_livestock_package ?ul_p)
+      )
+      :tasks (
+        (lower_ramp ?ul_v)
+        (unload_livestock ?ul_p ?ul_v ?ul_l)
+        (do_clean_interior ?ul_v)
+        (raise_ramp ?ul_v)
+      )
+    )
+    (:method method36
+      :precondition (and
+        (type_member_vehicle ?ul_v - vehicle)
+        (type_member_cars ?ul_p - package)
+        (type_member_location ?ul_l - location)
+        (type_member_cars ?ul_p)
+      )
+      :tasks (
+        (lower_ramp ?ul_v)
+        (unload_cars ?ul_p ?ul_v ?ul_l)
+        (raise_ramp ?ul_v)
+      )
+    )
+    (:method method37
+      :precondition (and
+        (type_member_location ?ul_l - location)
+        (type_member_airplane ?ul_v - vehicle)
+        (type_member_plane_ramp ?detach_conveyor_ramp_instance_6_argument_9 - plane_ramp)
+        (type_member_package ?ul_p - package)
+        (type_member_airplane ?ul_v)
+      )
+      :tasks (
+        (attach_conveyor_ramp ?ul_v ?detach_conveyor_ramp_instance_6_argument_9 ?ul_l)
+        (open_door ?ul_v)
+        (unload_package ?ul_p ?ul_v ?ul_l)
+        (close_door ?ul_v)
+        (detach_conveyor_ramp ?ul_v ?detach_conveyor_ramp_instance_6_argument_9 ?ul_l)
+      )
+    )
+  )
+
+  (:task unload_top
+    :parameters (?ult_p - package ?ult_v - vehicle ?ult_l - location)
+    (:method method41
+      :precondition (and
+        (type_member_package ?ult_p - package)
+        (type_member_vehicle ?ult_v - vehicle)
+        (type_member_location ?ult_l - location)
+        (not (type_member_valuable ?ult_p))
+        (not (type_member_hazardous ?ult_p))
+      )
+      :tasks (
+        (unload ?ult_p ?ult_v ?ult_l)
+      )
+    )
+    (:method method42
+      :precondition (and
+        (type_member_package ?ult_p - package)
+        (type_member_vehicle ?ult_v - vehicle)
+        (type_member_location ?ult_l - location)
+        (type_member_hazardous ?ult_p)
+      )
+      :tasks (
+        (unload ?ult_p ?ult_v ?ult_l)
+        (decontaminate_interior ?ult_v)
+        (remove_warning_signs ?ult_v)
+      )
+    )
+    (:method method43
+      :precondition (and
+        (type_member_package ?ult_p - package)
+        (type_member_vehicle ?ult_v - vehicle)
+        (type_member_location ?ult_l - location)
+        (type_member_valuable ?ult_p)
+      )
+      :tasks (
+        (post_guard_outside ?ult_v)
+        (unload ?ult_p ?ult_v ?ult_l)
+        (remove_guard ?ult_v)
+      )
+    )
+  )
+
+  (:action affix_warning_signs_primitive
+    :parameters (?fws_v - vehicle)
+    :precondition (and
+      (not (Warning_Signs_Affixed ?fws_v))
+    )
+    :effect (and
+      (Warning_Signs_Affixed ?fws_v)
+    )
+  )
+
+  (:action attach_conveyor_ramp_primitive
+    :parameters (?acr_ap - airplane ?acr_pr - plane_ramp ?acr_l - location)
+    :precondition (and
+      (Available ?acr_pr)
+      (At_Equipment ?acr_pr ?acr_l)
+      (At_Vehicle ?acr_ap ?acr_l)
+    )
+    :effect (and
+      (Ramp_Connected ?acr_pr ?acr_ap)
+      (not (Available ?acr_pr))
+    )
+  )
+
+  (:action attach_train_car_primitive
+    :parameters (?atc_t - train ?atc_tc - traincar ?atc_l - location)
+    :precondition (and
+      (At_Vehicle ?atc_tc ?atc_l)
+      (At_Vehicle ?atc_t ?atc_l)
+      (not (Connected_To ?atc_tc ?atc_t))
+    )
+    :effect (and
+      (Connected_To ?atc_tc ?atc_t)
+      (not (At_Vehicle ?atc_tc ?atc_l))
+    )
+  )
+
+  (:action close_door_primitive
+    :parameters (?cd_rv - regular_vehicle)
+    :precondition (and
+      (Door_Open ?cd_rv)
+    )
+    :effect (and
+      (not (Door_Open ?cd_rv))
+    )
+  )
+
+  (:action close_valve_primitive
+    :parameters (?cv_tv - tanker_vehicle)
+    :precondition (and
+      (Valve_Open ?cv_tv)
+    )
+    :effect (and
+      (not (Valve_Open ?cv_tv))
+    )
+  )
+
+  (:action collect_fees_primitive
+    :parameters (?cf_p - package)
+    :precondition (and
+      (not (Fees_Collected ?cf_p))
+    )
+    :effect (and
+      (Fees_Collected ?cf_p)
+    )
+  )
+
+  (:action collect_insurance_primitive
+    :parameters (?ci_v - valuable)
+    :precondition (and
+      (not (Insured ?ci_v))
+    )
+    :effect (and
+      (Insured ?ci_v)
+    )
+  )
+
+  (:action connect_chute_primitive
+    :parameters (?cc_h - hopper_vehicle)
+    :precondition (and
+      (not (Chute_Connected ?cc_h))
+    )
+    :effect (and
+      (Chute_Connected ?cc_h)
+    )
+  )
+
+  (:action connect_hose_primitive
+    :parameters (?ch_tv - tanker_vehicle ?ch_l - liquid)
+    :precondition (and
+      (not (Hose_Connected ?ch_tv ?ch_l))
+    )
+    :effect (and
+      (Hose_Connected ?ch_tv ?ch_l)
+    )
+  )
+
+  (:action decontaminate_interior_primitive
+    :parameters (?di_v - vehicle)
+    :precondition (
+    )
+    :effect (and
+      (Decontaminated_Interior ?di_v)
+    )
+  )
+
+  (:action deliver_h_primitive
+    :parameters (?dh_h - hazardous)
+    :precondition (and
+      (Fees_Collected ?dh_h)
+      (Have_Permit ?dh_h)
+    )
+    :effect (and
+      (not (Have_Permit ?dh_h))
+      (not (Fees_Collected ?dh_h))
+      (Delivered ?dh_h)
+    )
+  )
+
+  (:action deliver_p_primitive
+    :parameters (?dp_p - package)
+    :precondition (and
+      (Fees_Collected ?dp_p)
+    )
+    :effect (and
+      (not (Fees_Collected ?dp_p))
+      (Delivered ?dp_p)
+    )
+  )
+
+  (:action deliver_v_primitive
+    :parameters (?dv_v - valuable)
+    :precondition (and
+      (Fees_Collected ?dv_v)
+      (Insured ?dv_v)
+    )
+    :effect (and
+      (not (Fees_Collected ?dv_v))
+      (not (Insured ?dv_v))
+      (Delivered ?dv_v)
+    )
+  )
+
+  (:action detach_conveyor_ramp_primitive
+    :parameters (?dcr_ap - airplane ?dcr_pr - plane_ramp ?dcr_l - location)
+    :precondition (and
+      (Ramp_Connected ?dcr_pr ?dcr_ap)
+      (At_Equipment ?dcr_pr ?dcr_l)
+      (At_Vehicle ?dcr_ap ?dcr_l)
+    )
+    :effect (and
+      (Available ?dcr_pr)
+      (not (Ramp_Connected ?dcr_pr ?dcr_ap))
+    )
+  )
+
+  (:action detach_train_car_primitive
+    :parameters (?dtc_t - train ?dtc_tc - traincar ?dtc_l - location)
+    :precondition (and
+      (At_Vehicle ?dtc_t ?dtc_l)
+      (Connected_To ?dtc_tc ?dtc_t)
+    )
+    :effect (and
+      (At_Vehicle ?dtc_tc ?dtc_l)
+      (not (Connected_To ?dtc_tc ?dtc_t))
+    )
+  )
+
+  (:action disconnect_chute_primitive
+    :parameters (?dc_h - hopper_vehicle)
+    :precondition (and
+      (Chute_Connected ?dc_h)
+    )
+    :effect (and
+      (not (Chute_Connected ?dc_h))
+    )
+  )
+
+  (:action disconnect_hose_primitive
+    :parameters (?dch_tv - tanker_vehicle ?dch_l - liquid)
+    :precondition (and
+      (Hose_Connected ?dch_tv ?dch_l)
+    )
+    :effect (and
+      (not (Hose_Connected ?dch_tv ?dch_l))
+    )
+  )
+
+  (:action do_clean_interior_primitive
+    :parameters (?cli_v - vehicle)
+    :precondition (
+    )
+    :effect (and
+      (Clean_Interior ?cli_v)
+    )
+  )
+
+  (:action empty_hopper_primitive
+    :parameters (?eh_p - package ?eh_hv - hopper_vehicle ?eh_l - location)
+    :precondition (and
+      (Chute_Connected ?eh_hv)
+      (At_Vehicle ?eh_hv ?eh_l)
+      (At_Package ?eh_p ?eh_hv)
+    )
+    :effect (and
+      (At_Package ?eh_p ?eh_l)
+      (not (At_Package ?eh_p ?eh_hv))
+    )
+  )
+
+  (:action empty_tank_primitive
+    :parameters (?et_tv - tanker_vehicle ?et_li - liquid ?et_lo - location)
+    :precondition (and
+      (Hose_Connected ?et_tv ?et_li)
+      (Valve_Open ?et_tv)
+      (At_Package ?et_li ?et_tv)
+      (At_Vehicle ?et_tv ?et_lo)
+    )
+    :effect (and
+      (At_Package ?et_li ?et_lo)
+      (not (At_Package ?et_li ?et_tv))
+    )
+  )
+
+  (:action fill_hopper_primitive
+    :parameters (?fh_p - package ?fh_hv - hopper_vehicle ?fh_l - location)
+    :precondition (and
+      (Chute_Connected ?fh_hv)
+      (At_Vehicle ?fh_hv ?fh_l)
+      (At_Package ?fh_p ?fh_l)
+      (PV_Compatible ?fh_p ?fh_hv)
+    )
+    :effect (and
+      (At_Package ?fh_p ?fh_hv)
+      (not (At_Package ?fh_p ?fh_l))
+    )
+  )
+
+  (:action fill_tank_primitive
+    :parameters (?ft_tv - tanker_vehicle ?ft_li - liquid ?ft_lo - location)
+    :precondition (and
+      (Hose_Connected ?ft_tv ?ft_li)
+      (Valve_Open ?ft_tv)
+      (At_Package ?ft_li ?ft_lo)
+      (At_Vehicle ?ft_tv ?ft_lo)
+      (PV_Compatible ?ft_li ?ft_tv)
+    )
+    :effect (and
+      (At_Package ?ft_li ?ft_tv)
+      (not (At_Package ?ft_li ?ft_lo))
+    )
+  )
+
+  (:action fill_trough_primitive
+    :parameters (?ftr_v - livestock_vehicle)
+    :precondition (
+    )
+    :effect (and
+      (Trough_Full ?ftr_v)
+    )
+  )
+
+  (:action go_through_tcenter_cc_primitive
+    :parameters (?gttc_lo - not_tcenter ?gttc_ld - not_tcenter ?gttc_co - city ?gttc_cd - city ?gttc_tc - tcenter)
+    :precondition (and
+      (In_City ?gttc_lo ?gttc_co)
+      (In_City ?gttc_ld ?gttc_cd)
+      (Serves ?gttc_tc ?gttc_co)
+      (Serves ?gttc_tc ?gttc_cd)
+      (Available ?gttc_tc)
+    )
+    :effect (
+    )
+  )
+
+  (:action go_through_two_tcenters_primitive
+    :parameters (?gtttc_to - tcenter ?gtttc_td - tcenter)
+    :precondition (and
+      (Available ?gtttc_to)
+      (Available ?gtttc_td)
+    )
+    :effect (
+    )
+  )
+
+  (:action go_through_two_tcenters_cities_otd_primitive
+    :parameters (?gtttccotd_ld - not_tcenter ?gtttccotd_co - city ?gtttccotd_cd - city ?gtttccotd_to - tcenter ?gtttccotd_t1 - tcenter)
+    :precondition (and
+      (In_City ?gtttccotd_to ?gtttccotd_co)
+      (In_City ?gtttccotd_ld ?gtttccotd_cd)
+      (Serves ?gtttccotd_t1 ?gtttccotd_cd)
+    )
+    :effect (
+    )
+  )
+
+  (:action go_through_two_tcenters_cities_ott_primitive
+    :parameters (?gtttccott_ld - city_location ?gtttccott_co - city ?gtttccott_cd - city ?gtttccott_to - tcenter ?gtttccott_td - tcenter)
+    :precondition (and
+      (In_City ?gtttccott_ld ?gtttccott_co)
+      (In_City ?gtttccott_td ?gtttccott_cd)
+      (Serves ?gtttccott_to ?gtttccott_co)
+    )
+    :effect (
+    )
+  )
+
+  (:action go_through_two_tcenters_cities_ottd_primitive
+    :parameters (?gtttcc_lo - not_tcenter ?gtttcc_ld - not_tcenter ?gtttcc_co - city ?gtttcc_cd - city ?gtttcc_t1 - tcenter ?gtttcc_t2 - tcenter)
+    :precondition (and
+      (In_City ?gtttcc_lo ?gtttcc_co)
+      (In_City ?gtttcc_ld ?gtttcc_cd)
+      (Serves ?gtttcc_t1 ?gtttcc_co)
+      (Serves ?gtttcc_t2 ?gtttcc_cd)
+    )
+    :effect (
+    )
+  )
+
+  (:action go_through_two_tcenters_tt_primitive
+    :parameters (?gtttctt_to - tcenter ?gtttctt_td - tcenter ?gtttctt_co - city ?gtttctt_cd - city)
+    :precondition (and
+      (In_City ?gtttctt_to ?gtttctt_co)
+      (In_City ?gtttctt_td ?gtttctt_cd)
+    )
+    :effect (
+    )
+  )
+
+  (:action go_through_two_tcenters_via_hub_hazardous_primitive
+    :parameters (?gtttcvhh_to - tcenter ?gtttcvhh_td - tcenter ?gtttcvhh_h - hub ?gtttcvhh_co - city ?gtttcvhh_ch - city ?gtttcvhh_cd - city ?gtttcvhh_ro - region ?gtttcvhh_rd - region)
+    :precondition (and
+      (Available ?gtttcvhh_to)
+      (Available ?gtttcvhh_td)
+      (In_City ?gtttcvhh_h ?gtttcvhh_ch)
+      (City_Hazardous_Compatible ?gtttcvhh_ch)
+      (In_City ?gtttcvhh_to ?gtttcvhh_co)
+      (In_City ?gtttcvhh_td ?gtttcvhh_cd)
+      (In_Region ?gtttcvhh_co ?gtttcvhh_ro)
+      (In_Region ?gtttcvhh_cd ?gtttcvhh_rd)
+      (Serves ?gtttcvhh_h ?gtttcvhh_ro)
+      (Serves ?gtttcvhh_h ?gtttcvhh_rd)
+      (Available ?gtttcvhh_h)
+    )
+    :effect (
+    )
+  )
+
+  (:action go_through_two_tcenters_via_hub_not_hazardous_primitive
+    :parameters (?gtttcvhnh_to - tcenter ?gtttcvhnh_td - tcenter ?gtttcvhnh_co - city ?gtttcvhnh_cd - city ?gtttcvhnh_ro - region ?gtttcvhnh_rd - region ?gtttcvhnh_h - hub)
+    :precondition (and
+      (Available ?gtttcvhnh_to)
+      (Available ?gtttcvhnh_td)
+      (In_City ?gtttcvhnh_to ?gtttcvhnh_co)
+      (In_City ?gtttcvhnh_td ?gtttcvhnh_cd)
+      (In_Region ?gtttcvhnh_co ?gtttcvhnh_ro)
+      (In_Region ?gtttcvhnh_cd ?gtttcvhnh_rd)
+      (Serves ?gtttcvhnh_h ?gtttcvhnh_ro)
+      (Serves ?gtttcvhnh_h ?gtttcvhnh_rd)
+      (Available ?gtttcvhnh_h)
+    )
+    :effect (
+    )
+  )
+
+  (:action load_cars_primitive
+    :parameters (?lc_c - cars ?lc_v - auto_vehicle ?lc_l - location)
+    :precondition (and
+      (At_Package ?lc_c ?lc_l)
+      (At_Vehicle ?lc_v ?lc_l)
+      (Ramp_Down ?lc_v)
+      (PV_Compatible ?lc_c ?lc_v)
+    )
+    :effect (and
+      (At_Package ?lc_c ?lc_v)
+      (not (At_Package ?lc_c ?lc_l))
+    )
+  )
+
+  (:action load_livestock_primitive
+    :parameters (?ll_p - livestock_package ?ll_v - livestock_vehicle ?ll_l - location)
+    :precondition (and
+      (At_Package ?ll_p ?ll_l)
+      (At_Vehicle ?ll_v ?ll_l)
+      (Ramp_Down ?ll_v)
+      (PV_Compatible ?ll_p ?ll_v)
+    )
+    :effect (and
+      (At_Package ?ll_p ?ll_v)
+      (not (At_Package ?ll_p ?ll_l))
+      (not (Clean_Interior ?ll_v))
+    )
+  )
+
+  (:action load_package_primitive
+    :parameters (?lp_p - package ?lp_v - vehicle ?lp_l - location)
+    :precondition (and
+      (At_Package ?lp_p ?lp_l)
+      (At_Vehicle ?lp_v ?lp_l)
+      (PV_Compatible ?lp_p ?lp_v)
+    )
+    :effect (and
+      (At_Package ?lp_p ?lp_v)
+      (not (At_Package ?lp_p ?lp_l))
+    )
+  )
+
+  (:action lower_ramp_primitive
+    :parameters (?lr_v - vehicle)
+    :precondition (and
+      (not (Ramp_Down ?lr_v))
+    )
+    :effect (and
+      (Ramp_Down ?lr_v)
+    )
+  )
+
+  (:action move_vehicle_no_traincar_primitive
+    :parameters (?hmnt_v - vehicle ?hmnt_o - location ?hmnt_r - route ?hmnt_d - location)
+    :precondition (and
+      (Connects ?hmnt_r ?hmnt_o ?hmnt_d)
+      (Available ?hmnt_v)
+      (Available ?hmnt_r)
+      (RV_Compatible ?hmnt_r ?hmnt_v)
+      (At_Vehicle ?hmnt_v ?hmnt_o)
+    )
+    :effect (and
+      (At_Vehicle ?hmnt_v ?hmnt_d)
+      (not (At_Vehicle ?hmnt_v ?hmnt_o))
+    )
+  )
+
+  (:action obtain_permit_primitive
+    :parameters (?op_h - hazardous)
+    :precondition (and
+      (not (Have_Permit ?op_h))
+    )
+    :effect (and
+      (Have_Permit ?op_h)
+    )
+  )
+
+  (:action open_door_primitive
+    :parameters (?od_rv - regular_vehicle)
+    :precondition (and
+      (not (Door_Open ?od_rv))
+    )
+    :effect (and
+      (Door_Open ?od_rv)
+    )
+  )
+
+  (:action open_valve_primitive
+    :parameters (?ov_tv - tanker_vehicle)
+    :precondition (and
+      (not (Valve_Open ?ov_tv))
+    )
+    :effect (and
+      (Valve_Open ?ov_tv)
+    )
+  )
+
+  (:action pick_up_package_ground_primitive
+    :parameters (?pupg_p - package ?pupg_c - crane ?pupg_l - location)
+    :precondition (and
+      (Empty ?pupg_c)
+      (Available ?pupg_c)
+      (At_Equipment ?pupg_c ?pupg_l)
+      (At_Package ?pupg_p ?pupg_l)
+    )
+    :effect (and
+      (At_Package ?pupg_p ?pupg_c)
+      (not (Empty ?pupg_c))
+      (not (At_Package ?pupg_p ?pupg_l))
+    )
+  )
+
+  (:action pick_up_package_vehicle_primitive
+    :parameters (?pupv_p - package ?pupv_c - crane ?pupv_fv - flatbed_vehicle ?pupv_l - location)
+    :precondition (and
+      (Empty ?pupv_c)
+      (Available ?pupv_c)
+      (At_Equipment ?pupv_c ?pupv_l)
+      (At_Package ?pupv_p ?pupv_fv)
+      (At_Vehicle ?pupv_fv ?pupv_l)
+    )
+    :effect (and
+      (At_Package ?pupv_p ?pupv_c)
+      (not (Empty ?pupv_c))
+      (not (At_Package ?pupv_p ?pupv_fv))
+    )
+  )
+
+  (:action post_guard_inside_primitive
+    :parameters (?pci_a - armored)
+    :precondition (
+    )
+    :effect (and
+      (Guard_Inside ?pci_a)
+      (not (Guard_Outside ?pci_a))
+    )
+  )
+
+  (:action post_guard_outside_primitive
+    :parameters (?pco_a - armored)
+    :precondition (
+    )
+    :effect (and
+      (Guard_Outside ?pco_a)
+      (not (Guard_Inside ?pco_a))
+    )
+  )
+
+  (:action put_down_package_ground_primitive
+    :parameters (?pdpg_p - package ?pdpg_c - crane ?pdpg_l - location)
+    :precondition (and
+      (Available ?pdpg_c)
+      (At_Equipment ?pdpg_c ?pdpg_l)
+      (At_Package ?pdpg_p ?pdpg_c)
+    )
+    :effect (and
+      (At_Package ?pdpg_p ?pdpg_l)
+      (Empty ?pdpg_c)
+      (not (At_Package ?pdpg_p ?pdpg_c))
+    )
+  )
+
+  (:action put_down_package_vehicle_primitive
+    :parameters (?pdpv_p - package ?pdpv_c - crane ?pdpv_fv - flatbed_vehicle ?pdpv_l - location)
+    :precondition (and
+      (Available ?pdpv_c)
+      (At_Package ?pdpv_p ?pdpv_c)
+      (At_Equipment ?pdpv_c ?pdpv_l)
+      (At_Vehicle ?pdpv_fv ?pdpv_l)
+      (PV_Compatible ?pdpv_p ?pdpv_fv)
+    )
+    :effect (and
+      (Empty ?pdpv_c)
+      (At_Package ?pdpv_p ?pdpv_fv)
+      (not (At_Package ?pdpv_p ?pdpv_c))
+    )
+  )
+
+  (:action raise_ramp_primitive
+    :parameters (?rr_v - vehicle)
+    :precondition (and
+      (Ramp_Down ?rr_v)
+    )
+    :effect (and
+      (not (Ramp_Down ?rr_v))
+    )
+  )
+
+  (:action remove_guard_primitive
+    :parameters (?mc_a - armored)
+    :precondition (
+    )
+    :effect (and
+      (not (Guard_Outside ?mc_a))
+      (not (Guard_Inside ?mc_a))
+    )
+  )
+
+  (:action remove_warning_signs_primitive
+    :parameters (?mws_v - vehicle)
+    :precondition (and
+      (Warning_Signs_Affixed ?mws_v)
+    )
+    :effect (and
+      (not (Warning_Signs_Affixed ?mws_v))
+    )
+  )
+
+  (:action unload_cars_primitive
+    :parameters (?uc_c - cars ?uc_v - auto_vehicle ?uc_l - location)
+    :precondition (and
+      (At_Package ?uc_c ?uc_v)
+      (At_Vehicle ?uc_v ?uc_l)
+      (Ramp_Down ?uc_v)
+    )
+    :effect (and
+      (At_Package ?uc_c ?uc_l)
+      (not (At_Package ?uc_c ?uc_v))
+    )
+  )
+
+  (:action unload_livestock_primitive
+    :parameters (?ull_p - livestock_package ?ull_v - livestock_vehicle ?ull_l - location)
+    :precondition (and
+      (At_Package ?ull_p ?ull_v)
+      (At_Vehicle ?ull_v ?ull_l)
+      (Ramp_Down ?ull_v)
+    )
+    :effect (and
+      (At_Package ?ull_p ?ull_l)
+      (not (At_Package ?ull_p ?ull_v))
+      (not (Trough_Full ?ull_v))
+    )
+  )
+
+  (:action unload_package_primitive
+    :parameters (?up_p - package ?up_v - vehicle ?up_l - location)
+    :precondition (and
+      (At_Package ?up_p ?up_v)
+      (At_Vehicle ?up_v ?up_l)
+    )
+    :effect (and
+      (At_Package ?up_p ?up_l)
+      (not (At_Package ?up_p ?up_v))
+    )
+  )
+
+  (:action goal_action_primitive
+    :parameters ()
+    :precondition (and
+      (Delivered Toshiba_Laptops)
+      (Delivered Drucker)
+    )
+    :effect (
+    )
+  )
+
+)

@@ -1,0 +1,46 @@
+(define (problem prob) (:domain dom)
+  (:objects
+    capacity_0 capacity_1 - capacity_number
+    city_loc_0 city_loc_1 city_loc_2 - location
+    package_0 package_1 - package
+    truck_0 - vehicle
+  )
+
+  (:init
+    (capacity_predecessor capacity_0 capacity_1)
+    (road city_loc_0 city_loc_1)
+    (road city_loc_1 city_loc_0)
+    (road city_loc_1 city_loc_2)
+    (road city_loc_2 city_loc_1)
+    (at package_0 city_loc_1)
+    (at package_1 city_loc_1)
+    (at truck_0 city_loc_2)
+    (capacity truck_0 capacity_1)
+    (type_member_capacity_number capacity_0)
+    (type_member_capacity_number capacity_1)
+    (type_member_locatable package_0)
+    (type_member_locatable package_1)
+    (type_member_locatable truck_0)
+    (type_member_location city_loc_0)
+    (type_member_location city_loc_1)
+    (type_member_location city_loc_2)
+    (type_member_object__compiled capacity_0)
+    (type_member_object__compiled capacity_1)
+    (type_member_object__compiled city_loc_0)
+    (type_member_object__compiled city_loc_1)
+    (type_member_object__compiled city_loc_2)
+    (type_member_object__compiled package_0)
+    (type_member_object__compiled package_1)
+    (type_member_object__compiled truck_0)
+    (type_member_package package_0)
+    (type_member_package package_1)
+    (type_member_vehicle truck_0)
+  )
+
+  (:tasks-goal
+      :tasks (
+        (deliver package_0 city_loc_0)
+        (deliver package_1 city_loc_2)
+      )
+  )
+)

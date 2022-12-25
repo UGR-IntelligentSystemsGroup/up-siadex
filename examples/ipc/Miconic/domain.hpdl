@@ -1,0 +1,153 @@
+(define (domain dom)
+  (:requirements 
+    :typing
+    :htn-expansion
+    :negative-preconditions
+    :conditional-effects
+    :universal-preconditions
+    :disjunctive-preconditions
+    :equality
+    :existential-preconditions
+  )
+  (:types 
+     object__compiled - object
+    floor - object__compiled
+    person - object__compiled
+  )
+
+  (:constants
+  )
+
+  (:predicates
+    (type_member_floor ?var - object)
+    (type_member_object__compiled ?var - object)
+    (type_member_person ?var - object)
+    (boarded ?var0 - person)
+    (goal ?var0 - person)
+    (lift_at ?var0 - floor)
+    (origin ?var0 - person ?var1 - floor)
+    (destination ?var0 - person ?var1 - floor)
+  )
+
+
+  (:task move
+    :parameters (?f1 - object ?f2 - object)
+    (:method method1
+      :precondition (and
+        (type_member_floor ?f1)
+        (type_member_floor ?f2)
+      )
+      :tasks (
+        (move_primitive ?f1 - floor ?f2 - floor)
+      )
+    )
+  )
+
+  (:task board
+    :parameters (?p - object ?f - object)
+    (:method method1
+      :precondition (and
+        (type_member_person ?p)
+        (type_member_floor ?f)
+      )
+      :tasks (
+        (board_primitive ?p - person ?f - floor)
+      )
+    )
+  )
+
+  (:task debark
+    :parameters (?p - object ?f - object)
+    (:method method1
+      :precondition (and
+        (type_member_person ?p)
+        (type_member_floor ?f)
+      )
+      :tasks (
+        (debark_primitive ?p - person ?f - floor)
+      )
+    )
+  )
+
+; ************************************************************
+; ************************************************************
+  (:task solve_elevator
+    :parameters ()
+    (:method m1_abort_ordering_0
+      :precondition (and
+        (forall (?p - person)
+          (not (goal ?p))
+        )
+      )
+      :tasks ()
+    )
+    (:method m1_go_ordering_0
+      :precondition (and
+        (type_member_floor ?d - floor)
+        (type_member_floor ?f - floor)
+        (type_member_floor ?o - floor)
+        (type_member_person ?p - person)
+        (goal ?p)
+        (lift_at ?f)
+        (origin ?p ?o)
+        (destination ?p ?d)
+      )
+      :tasks (
+        (deliver_person ?p ?o ?d)
+        (solve_elevator)
+      )
+    )
+  )
+
+  (:task deliver_person
+    :parameters (?p - person ?o - floor ?d - floor)
+    (:method m2_ordering_0
+      :precondition (and
+        (type_member_floor ?d - floor)
+        (type_member_floor ?f - floor)
+        (type_member_floor ?o - floor)
+        (type_member_person ?p - person)
+        (lift_at ?f)
+      )
+      :tasks (
+        (move ?f ?o)
+        (board ?p ?o)
+        (move ?o ?d)
+        (debark ?p ?d)
+      )
+    )
+  )
+
+  (:action move_primitive
+    :parameters (?f1 - floor ?f2 - floor)
+    :precondition (and
+      (lift_at ?f1)
+    )
+    :effect (and
+      (not (lift_at ?f1))
+      (lift_at ?f2)
+    )
+  )
+
+  (:action board_primitive
+    :parameters (?p - person ?f - floor)
+    :precondition (
+    )
+    :effect (and
+      (boarded ?p)
+    )
+  )
+
+  (:action debark_primitive
+    :parameters (?p - person ?f - floor)
+    :precondition (and
+      (boarded ?p)
+      (goal ?p)
+    )
+    :effect (and
+      (not (boarded ?p))
+      (not (goal ?p))
+    )
+  )
+
+)

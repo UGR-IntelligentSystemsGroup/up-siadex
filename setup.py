@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
 
 import platform
-
+import subprocess
 from setuptools import setup  # type: ignore
 
 arch = (platform.system(), platform.machine())
+
+
 
 EXECUTABLES = {
     ("Linux", "x86_64"): "bin/planner",

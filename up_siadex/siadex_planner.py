@@ -45,7 +45,14 @@ credits = Credits(
 class SIADEXEngine(PDDLPlanner):
     def __init__(self):
         super().__init__(needs_requirements=True)
+        
 
+    # def _check_requisites(self):
+    #     lib = subprocess.call(["which", "libreadline-dev"])
+    #     py = subprocess.call(["which", "python2.7-dev"])
+    #     if lib != 0 or py != 0:
+    #         raise UPException("Package neededs on system: libreadline-dev, python2.7-dev") 
+        
     @staticmethod
     def name() -> str:
         return "SIADEX"
@@ -73,6 +80,7 @@ class SIADEXEngine(PDDLPlanner):
         timeout: Optional[float] = None,
         output_stream: Optional[IO[str]] = None,
     ) -> "up.engines.results.PlanGenerationResult":
+        # self._check_requisites()
         assert isinstance(problem, HierarchicalProblem)
         w = HPDLWriter(problem, self._needs_requirements)
         plan = None
@@ -197,8 +205,12 @@ class SIADEXEngine(PDDLPlanner):
                     line.lower(),
                 )
                 if res:
-                    action_name = res.group(1).replace("_", "-")
-                    action = problem.action(action_name)
+                    try:
+                        action_name = res.group(1)#.replace("_", "-")
+                        action = problem.action(action_name)
+                    except Exception as e:
+                        action_name = action_name.replace("_", "-")
+                        action = problem.action(action_name)
                     parameters = []
                     for param in res.group(2).split():
                         param = param.replace("_", "-")
