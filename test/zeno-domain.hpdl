@@ -1,0 +1,208 @@
+(define (domain prob-domain)
+ (:requirements
+   :strips
+   :typing
+   :negative-preconditions
+   :universal-preconditions
+   :htn-expansion
+ )
+ (:types
+    object__compiled - object
+    thing city flevel - object__compiled
+    person aircraft - thing
+ )
+ (:constants
+   p4 p1 p3 p2 - person
+   c4 c3 - city
+ )
+ (:predicates
+  (type_member_aircraft ?var - object)
+  (type_member_city ?var - object)
+  (type_member_flevel ?var - object)
+  (type_member_object__compiled ?var - object)
+  (type_member_person ?var - object)
+  (type_member_thing ?var - object)
+  (type_member_time ?var - object)
+  (at_ ?var0 - thing ?var1 - city)
+  (in ?var0 - person ?var1 - aircraft)
+  (different ?var0 - city ?var1 - city)
+  (next ?var0 - flevel ?var1 - flevel)
+  (fuel_level ?var0 - aircraft ?var1 - flevel)
+ )
+ (:task board
+  :parameters (?p - object ?a - object ?c - object )
+  (:method board_method1
+   :precondition (and
+    (and (type_member_person ?p) (type_member_aircraft ?a) (type_member_city ?c))
+   )
+   :tasks (
+    (board_primitive ?p - person ?a - aircraft ?c - city )
+   )
+  )
+ )
+ (:task debark
+  :parameters (?p - object ?a - object ?c - object )
+  (:method debark_method1
+   :precondition (and
+    (and (type_member_person ?p) (type_member_aircraft ?a) (type_member_city ?c))
+   )
+   :tasks (
+    (debark_primitive ?p - person ?a - aircraft ?c - city )
+   )
+  )
+ )
+ (:task refuel
+  :parameters (?a - object ?l - object ?l1 - object )
+  (:method refuel_method1
+   :precondition (and
+    (and (type_member_aircraft ?a) (type_member_flevel ?l) (type_member_flevel ?l1))
+   )
+   :tasks (
+    (refuel_primitive ?a - aircraft ?l - flevel ?l1 - flevel )
+   )
+  )
+ )
+ (:task fly
+  :parameters (?a - object ?c1 - object ?c2 - object ?l1 - object ?l2 - object )
+  (:method fly_method1
+   :precondition (and
+    (and (type_member_aircraft ?a) (type_member_city ?c1) (type_member_city ?c2) (type_member_flevel ?l1) (type_member_flevel ?l2))
+   )
+   :tasks (
+    (fly_primitive ?a - aircraft ?c1 - city ?c2 - city ?l1 - flevel ?l2 - flevel )
+   )
+  )
+ )
+ (:task goal_action
+  :parameters ()
+  (:method goal_action_method1
+   :precondition ()
+   :tasks (
+    (goal_action_primitive )
+   )
+  )
+ )
+ (:task transport_person
+  :parameters (?p - person ?c - city )
+  (:method transport_person_m1_ordering_0
+   :precondition (and
+    (and (type_member_city ?c) (type_member_person ?p) (at_ ?p ?c))
+   )
+   :tasks (
+   )
+  )
+  (:method transport_person_m2_ordering_0
+   :precondition (and
+    (and (type_member_aircraft ?a) (type_member_city ?c1) (type_member_city ?c) (type_member_person ?p) (at_ ?p ?c1) (at_ ?a ?c1))
+   )
+   :tasks (
+    (board ?p - object ?a - object ?c1 - object )
+    (upper_move_aircraft ?a - aircraft ?c - city )
+    (debark ?p - object ?a - object ?c - object )
+   )
+  )
+  (:method transport_person_m3_ordering_0
+   :precondition (and
+    (and (type_member_aircraft ?a) (type_member_city ?c1) (type_member_city ?c) (type_member_city ?c3) (type_member_person ?p) (at_ ?p ?c1) (at_ ?a ?c3) (different ?c1 ?c3))
+   )
+   :tasks (
+    (upper_move_aircraft ?a - aircraft ?c1 - city )
+    (board ?p - object ?a - object ?c1 - object )
+    (upper_move_aircraft ?a - aircraft ?c - city )
+    (debark ?p - object ?a - object ?c - object )
+   )
+  )
+ )
+ (:task upper_move_aircraft
+  :parameters (?a - aircraft ?c - city )
+  (:method upper_move_aircraft_m4_abort_ordering_0
+   :precondition (and
+    (and (type_member_aircraft ?a) (type_member_city ?c) (at_ ?a ?c))
+   )
+   :tasks (
+   )
+  )
+  (:method upper_move_aircraft_m4_do_ordering_0
+   :precondition (and
+    (and (type_member_aircraft ?a) (type_member_city ?c) (type_member_city ?other) (not (at_ ?a ?c)) (at_ ?a ?other) (different ?c ?other))
+   )
+   :tasks (
+    (move_aircraft ?a - aircraft ?other - city ?c - city )
+   )
+  )
+ )
+ (:task move_aircraft
+  :parameters (?a - aircraft ?c1 - city ?c2 - city )
+  (:method move_aircraft_m5_case1_ordering_0
+   :precondition (and
+    (and (type_member_aircraft ?a) (type_member_city ?c1) (type_member_city ?c2) (type_member_flevel ?l1) (type_member_flevel ?l2) (fuel_level ?a ?l1) (next ?l2 ?l1))
+   )
+   :tasks (
+    (fly ?a - object ?c1 - object ?c2 - object ?l1 - object ?l2 - object )
+   )
+  )
+  (:method move_aircraft_m5_case2_ordering_0
+   :precondition (and
+    (and (type_member_aircraft ?a) (type_member_city ?c1) (type_member_city ?c2) (type_member_flevel ?l) (type_member_flevel ?l1) (fuel_level ?a ?l) (forall (?l2 - flevel)
+ (not (next ?l2 ?l))))
+   )
+   :tasks (
+    (refuel ?a - object ?l - object ?l1 - object )
+    (fly ?a - object ?c1 - object ?c2 - object ?l1 - object ?l - object )
+   )
+  )
+ )
+ (:task transport_aircraft
+  :parameters (?a - aircraft ?c - city )
+  (:method transport_aircraft_m6_ordering_0
+   :precondition (and
+    (and (type_member_aircraft ?a) (type_member_city ?c))
+   )
+   :tasks (
+    (upper_move_aircraft ?a - aircraft ?c - city )
+   )
+  )
+ )
+ (:action board_primitive
+  :parameters (?p - person ?a - aircraft ?c - city )
+  :precondition (and
+   (at_ ?p ?c)
+  )
+  :effect (and
+   (not (at_ ?p ?c))(in ?p ?a)
+  )
+ )
+ (:action debark_primitive
+  :parameters (?p - person ?a - aircraft ?c - city )
+  :precondition (and
+   (in ?p ?a)
+  )
+  :effect (and
+   (not (in ?p ?a))(at_ ?p ?c)
+  )
+ )
+ (:action refuel_primitive
+  :parameters (?a - aircraft ?l - flevel ?l1 - flevel )
+  :precondition (and
+   (fuel_level ?a ?l)
+  )
+  :effect (and
+   (not (fuel_level ?a ?l))(fuel_level ?a ?l1)
+  )
+ )
+ (:action fly_primitive
+  :parameters (?a - aircraft ?c1 - city ?c2 - city ?l1 - flevel ?l2 - flevel )
+  :precondition (and
+   (and (at_ ?a ?c1) (fuel_level ?a ?l1))
+  )
+  :effect (and
+   (not (at_ ?a ?c1))(not (fuel_level ?a ?l1))(at_ ?a ?c2)(fuel_level ?a ?l2)
+  )
+ )
+ (:action goal_action_primitive
+  :parameters ()
+  :precondition (and
+   (and (at_ p1 c3) (at_ p2 c4) (at_ p3 c4) (at_ p4 c4))
+  )
+ )
+)

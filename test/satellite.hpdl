@@ -1,0 +1,210 @@
+(define (domain prob-domain)
+ (:requirements
+   :strips
+   :typing
+   :negative-preconditions
+   :equality
+   :htn-expansion
+ )
+ (:types
+    instrument direction mode satellite - object
+    calib_direction image_direction - direction
+ )
+ (:predicates
+  (type_member_calib_direction ?var - object)
+  (type_member_direction ?var - object)
+  (type_member_image_direction ?var - object)
+  (type_member_instrument ?var - object)
+  (type_member_mode ?var - object)
+  (type_member_satellite ?var - object)
+  (calibrated ?var0 - instrument)
+  (calibration_target ?var0 - instrument ?var1 - calib_direction)
+  (have_image ?var0 - image_direction ?var1 - mode)
+  (on_board ?var0 - instrument ?var1 - satellite)
+  (pointing ?var0 - satellite ?var1 - direction)
+  (power_avail ?var0 - satellite)
+  (power_on ?var0 - instrument)
+  (supports ?var0 - instrument ?var1 - mode)
+ )
+ (:task calibrate
+  :parameters (?c_s - satellite ?c_i - instrument ?c_d - calib_direction )
+  (:method calibrate_method1
+   :precondition (and
+    (type_member_calib_direction ?c_d - calib_direction)
+   )
+   :tasks (
+    (calibrate_primitive ?c_s - satellite ?c_i - instrument ?c_d - calib_direction )
+   )
+  )
+ )
+ (:task switch_off
+  :parameters (?sof_i - object ?sof_s - object )
+  (:method switch_off_method1
+   :precondition (and
+    (and (type_member_instrument ?sof_i - object) (type_member_satellite ?sof_s - object))
+   )
+   :tasks (
+    (switch_off_primitive ?sof_i - object ?sof_s - object )
+   )
+  )
+ )
+ (:task switch_on
+  :parameters (?so_i - object ?so_s - object )
+  (:method switch_on_method1
+   :precondition (and
+    (and (type_member_instrument ?so_i - object) (type_member_satellite ?so_s - object))
+   )
+   :tasks (
+    (switch_on_primitive ?so_i - object ?so_s - object )
+   )
+  )
+ )
+ (:task take_image
+  :parameters (?ti_s - object ?ti_d - object ?ti_i - object ?ti_m - object )
+  (:method take_image_method1
+   :precondition (and
+    (and (type_member_satellite ?ti_s - object) (type_member_image_direction ?ti_d - object) (type_member_instrument ?ti_i - object) (type_member_mode ?ti_m - object))
+   )
+   :tasks (
+    (take_image_primitive ?ti_s - object ?ti_d - object ?ti_i - object ?ti_m - object )
+   )
+  )
+ )
+ (:task turn_to
+  :parameters (?t_s - object ?t_d_new - object ?t_d_prev - object )
+  (:method turn_to_method1
+   :precondition (and
+    (and (type_member_satellite ?t_s - object) (type_member_direction ?t_d_new - object) (type_member_direction ?t_d_prev - object))
+   )
+   :tasks (
+    (turn_to_primitive ?t_s - object ?t_d_new - object ?t_d_prev - object )
+   )
+  )
+ )
+ (:task activate_instrument
+  :parameters (?ai_s - satellite ?ai_i - instrument )
+  (:method activate_instrument_method4
+   :precondition (and
+    (and (type_member_satellite ?ai_s - satellite) (type_member_instrument ?ai_i - instrument) (type_member_instrument ?switch_off_instance_2_argument_0 - instrument) (not (= ?switch_off_instance_2_argument_0  ?ai_i )))
+   )
+   :tasks (
+    (switch_off ?switch_off_instance_2_argument_0 - instrument ?ai_s - satellite )
+    (switch_on ?ai_i - instrument ?ai_s - satellite )
+    (auto_calibrate ?ai_s - satellite ?ai_i - instrument )
+   )
+  )
+  (:method activate_instrument_method5
+   :precondition (and
+    (and (type_member_satellite ?ai_s - satellite) (type_member_instrument ?ai_i - instrument))
+   )
+   :tasks (
+    (switch_on ?ai_i - instrument ?ai_s - satellite )
+    (auto_calibrate ?ai_s - satellite ?ai_i - instrument )
+   )
+  )
+ )
+ (:task auto_calibrate
+  :parameters (?ac_s - satellite ?ac_i - instrument )
+  (:method auto_calibrate_method6
+   :precondition (and
+    (and (type_member_satellite ?ac_s - satellite) (type_member_instrument ?ac_i - instrument) (type_member_calib_direction ?calibrate_instance_3_argument_5 - calib_direction) (type_member_direction ?turn_to_instance_2_argument_2 - calib_direction) (not (= ?calibrate_instance_3_argument_5  ?turn_to_instance_2_argument_2 )))
+   )
+   :tasks (
+    (turn_to ?ac_s - satellite ?calibrate_instance_3_argument_5 - calib_direction ?turn_to_instance_2_argument_2 - calib_direction )
+    (calibrate ?ac_s - satellite ?ac_i - instrument ?calibrate_instance_3_argument_5 - calib_direction )
+   )
+  )
+  (:method auto_calibrate_method7
+   :precondition (and
+    (and (type_member_satellite ?ac_s - satellite) (type_member_instrument ?ac_i - instrument) (type_member_calib_direction ?calibrate_instance_2_argument_2 - calib_direction))
+   )
+   :tasks (
+    (calibrate ?ac_s - satellite ?ac_i - instrument ?calibrate_instance_2_argument_2 - calib_direction )
+   )
+  )
+ )
+ (:task do_observation
+  :parameters (?do_d - image_direction ?do_m - mode )
+  (:method do_observation_method0
+   :precondition (and
+    (and (type_member_image_direction ?do_d - image_direction) (type_member_instrument ?take_image_instance_4_argument_7 - instrument) (type_member_mode ?do_m - mode) (type_member_satellite ?turn_to_instance_3_argument_2 - satellite) (type_member_direction ?turn_to_instance_3_argument_4 - image_direction) (not (= ?do_d  ?turn_to_instance_3_argument_4 )))
+   )
+   :tasks (
+    (activate_instrument ?turn_to_instance_3_argument_2 - satellite ?take_image_instance_4_argument_7 - instrument )
+    (turn_to ?turn_to_instance_3_argument_2 - satellite ?do_d - image_direction ?turn_to_instance_3_argument_4 - image_direction )
+    (take_image ?turn_to_instance_3_argument_2 - satellite ?do_d - image_direction ?take_image_instance_4_argument_7 - instrument ?do_m - mode )
+   )
+  )
+  (:method do_observation_method1
+   :precondition (and
+    (and (type_member_image_direction ?do_d - image_direction) (type_member_instrument ?take_image_instance_3_argument_5 - instrument) (type_member_mode ?do_m - mode) (type_member_satellite ?turn_to_instance_2_argument_0 - satellite) (type_member_direction ?turn_to_instance_2_argument_2 - image_direction) (not (= ?do_d  ?turn_to_instance_2_argument_2 )))
+   )
+   :tasks (
+    (turn_to ?turn_to_instance_2_argument_0 - satellite ?do_d - image_direction ?turn_to_instance_2_argument_2 - image_direction )
+    (take_image ?turn_to_instance_2_argument_0 - satellite ?do_d - image_direction ?take_image_instance_3_argument_5 - instrument ?do_m - mode )
+   )
+  )
+  (:method do_observation_method2
+   :precondition (and
+    (and (type_member_satellite ?take_image_instance_3_argument_2 - satellite) (type_member_image_direction ?do_d - image_direction) (type_member_instrument ?take_image_instance_3_argument_4 - instrument) (type_member_mode ?do_m - mode))
+   )
+   :tasks (
+    (activate_instrument ?take_image_instance_3_argument_2 - satellite ?take_image_instance_3_argument_4 - instrument )
+    (take_image ?take_image_instance_3_argument_2 - satellite ?do_d - image_direction ?take_image_instance_3_argument_4 - instrument ?do_m - mode )
+   )
+  )
+  (:method do_observation_method3
+   :precondition (and
+    (and (type_member_satellite ?take_image_instance_2_argument_0 - satellite) (type_member_image_direction ?do_d - image_direction) (type_member_instrument ?take_image_instance_2_argument_2 - instrument) (type_member_mode ?do_m - mode))
+   )
+   :tasks (
+    (take_image ?take_image_instance_2_argument_0 - satellite ?do_d - image_direction ?take_image_instance_2_argument_2 - instrument ?do_m - mode )
+   )
+  )
+ )
+ (:action calibrate_primitive
+  :parameters (?c_s - satellite ?c_i - instrument ?c_d - calib_direction )
+  :precondition (and
+   (and (on_board ?c_i - instrument ?c_s - satellite) (calibration_target ?c_i - instrument ?c_d - calib_direction) (pointing ?c_s - satellite ?c_d - calib_direction) (power_on ?c_i - instrument))
+  )
+  :effect (and
+   (calibrated ?c_i - instrument)
+  )
+ )
+ (:action switch_off_primitive
+  :parameters (?sof_i - instrument ?sof_s - satellite )
+  :precondition (and
+   (and (on_board ?sof_i - instrument ?sof_s - satellite) (power_on ?sof_i - instrument))
+  )
+  :effect (and
+   (not (power_on ?sof_i - instrument))(power_avail ?sof_s - satellite)
+  )
+ )
+ (:action switch_on_primitive
+  :parameters (?so_i - instrument ?so_s - satellite )
+  :precondition (and
+   (and (on_board ?so_i - instrument ?so_s - satellite) (power_avail ?so_s - satellite))
+  )
+  :effect (and
+   (power_on ?so_i - instrument)(not (calibrated ?so_i - instrument))(not (power_avail ?so_s - satellite))
+  )
+ )
+ (:action take_image_primitive
+  :parameters (?ti_s - satellite ?ti_d - image_direction ?ti_i - instrument ?ti_m - mode )
+  :precondition (and
+   (and (calibrated ?ti_i - instrument) (pointing ?ti_s - satellite ?ti_d - image_direction) (on_board ?ti_i - instrument ?ti_s - satellite) (power_on ?ti_i - instrument) (supports ?ti_i - instrument ?ti_m - mode))
+  )
+  :effect (and
+   (have_image ?ti_d - image_direction ?ti_m - mode)
+  )
+ )
+ (:action turn_to_primitive
+  :parameters (?t_s - satellite ?t_d_new - direction ?t_d_prev - direction )
+  :precondition (and
+   (pointing ?t_s - satellite ?t_d_prev - direction)
+  )
+  :effect (and
+   (pointing ?t_s - satellite ?t_d_new - direction)(not (pointing ?t_s - satellite ?t_d_prev - direction))
+  )
+ )
+)

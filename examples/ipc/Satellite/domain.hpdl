@@ -10,13 +10,9 @@
     :existential-preconditions
   )
   (:types 
-    direction - object
+    direction instrument mode satellite - object
     calib_direction - direction
     image_direction - direction
-    instrument mode satellite
-  )
-
-  (:constants
   )
 
   (:predicates
@@ -38,12 +34,12 @@
 
 
   (:task calibrate
-    :parameters (?c_s - object ?c_i - object ?c_d - object)
+    :parameters (?c_s - satellite ?c_i - instrument ?c_d - calib_direction)
     (:method method1
       :precondition (and
-        (type_member_satellite ?c_s)
-        (type_member_instrument ?c_i)
-        (type_member_calib_direction ?c_d)
+        ; (type_member_satellite ?c_s - satellite)
+        ; (type_member_instrument ?c_i - instrument)
+        (type_member_calib_direction ?c_d - calib_direction)
       )
       :tasks (
         (calibrate_primitive ?c_s - satellite ?c_i - instrument ?c_d - calib_direction)
@@ -118,7 +114,7 @@
         (not (= ?switch_off_instance_2_argument_0 ?ai_i))
       )
       :tasks (
-        (switch_off ?switch_off_instance_2_argument_0 ?ai_s)
+        (switch_off ?switch_off_instance_2_argument_0 - instrument ?ai_s - satellite) 
         (switch_on ?ai_i ?ai_s)
         (auto_calibrate ?ai_s ?ai_i)
       )
@@ -142,7 +138,7 @@
         (type_member_satellite ?ac_s - satellite)
         (type_member_instrument ?ac_i - instrument)
         (type_member_calib_direction ?calibrate_instance_3_argument_5 - calib_direction)
-        (type_member_direction ?turn_to_instance_2_argument_2 - direction)
+        (type_member_direction ?turn_to_instance_2_argument_2 - calib_direction)
         (type_member_calib_direction ?calibrate_instance_3_argument_5)
         (not (= ?calibrate_instance_3_argument_5 ?turn_to_instance_2_argument_2))
       )
@@ -171,7 +167,7 @@
         (type_member_instrument ?take_image_instance_4_argument_7 - instrument)
         (type_member_mode ?do_m - mode)
         (type_member_satellite ?turn_to_instance_3_argument_2 - satellite)
-        (type_member_direction ?turn_to_instance_3_argument_4 - direction)
+        (type_member_direction ?turn_to_instance_3_argument_4 - image_direction)
         (type_member_image_direction ?do_d)
         (not (= ?do_d ?turn_to_instance_3_argument_4))
       )
@@ -187,7 +183,7 @@
         (type_member_instrument ?take_image_instance_3_argument_5 - instrument)
         (type_member_mode ?do_m - mode)
         (type_member_satellite ?turn_to_instance_2_argument_0 - satellite)
-        (type_member_direction ?turn_to_instance_2_argument_2 - direction)
+        (type_member_direction ?turn_to_instance_2_argument_2 - image_direction)
         (type_member_image_direction ?do_d)
         (not (= ?do_d ?turn_to_instance_2_argument_2))
       )

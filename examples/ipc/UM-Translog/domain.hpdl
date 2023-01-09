@@ -29,6 +29,7 @@
     liquid - physical
     livestock - physical
     water - liquid
+    not_tcenter - city_location
 
     traincar - vehicle
     traincar - vehicle_position
@@ -71,8 +72,7 @@
     train_station_hub - hub
     train_station_hub - train_station
     valuable - package
-    vehicle - equipment_position
-    vehicle - package_storage_position
+
     water - package
     armored - speciality
     hopper_vehicle - hopper
@@ -103,7 +103,15 @@
     armored_tanker_truck - tanker_vehicle
     armored_tanker_truck - armored_vehicle
     armored_tanker_truck - truck
-
+    ore - granular
+    ore - package
+    parcels - package
+    parcels - regular
+    perishable - package
+    plane_ramp - equipment
+    post_office - not_tcenter
+    rail_route - route
+    refrigerated - speciality
     auto - physical
     auto_vehicle - vehicle
     auto_vehicle - auto
@@ -133,15 +141,13 @@
     livestock_package - package
     livestock_package - livestock
     livestock_traincar - traincar
+    livestock_vehicle - livestock
+    livestock_vehicle - vehicle
     livestock_traincar - livestock_vehicle
     livestock_truck - livestock_vehicle
     livestock_truck - truck
-    livestock_vehicle - livestock
-    livestock_vehicle - vehicle
+
     local_road_route - road_route
-    location - vehicle_position
-    location - equipment_position
-    location - package_storage_position
     lumber - bulky
     lumber - package
     mail - physical
@@ -149,24 +155,17 @@
     mail_package - package
     mail_package - regular
     mail_traincar - traincar
+    mail_vehicle - regular_vehicle
+    mail_vehicle - mail
     mail_traincar - mail_vehicle
     mail_truck - mail_vehicle
     mail_truck - truck
-    mail_vehicle - regular_vehicle
-    mail_vehicle - mail
+
     money_art - valuable
     money_art - package
     money_art - regular
-    not_tcenter - city_location
-    ore - granular
-    ore - package
-    parcels - package
-    parcels - regular
-    perishable - package
-    plane_ramp - equipment
-    post_office - not_tcenter
-    rail_route - route
-    refrigerated - speciality
+    refrigerated_vehicle - refrigerated
+    refrigerated_vehicle - vehicle
     refrigerated_regular_traincar - regular_vehicle
     refrigerated_regular_traincar - traincar
     refrigerated_regular_traincar - refrigerated_vehicle
@@ -179,8 +178,7 @@
     refrigerated_tanker_truck - tanker_vehicle
     refrigerated_tanker_truck - truck
     refrigerated_tanker_truck - refrigerated_vehicle
-    refrigerated_vehicle - refrigerated
-    refrigerated_vehicle - vehicle
+
     
     )
 
@@ -330,7 +328,7 @@
   )
 
   (:task attach_conveyor_ramp
-    :parameters (?acr_ap - object ?acr_pr - object ?acr_l - object)
+    :parameters (?acr_ap - airplane ?acr_pr - plane_ramp ?acr_l - location)
     (:method method1
       :precondition (and
         (type_member_airplane ?acr_ap)
@@ -1861,7 +1859,7 @@
   )
 
   (:action attach_conveyor_ramp_primitive
-    :parameters (?acr_ap - airplane ?acr_pr - plane_ramp ?acr_l - location)
+    :parameters (?acr_ap - vehicle ?acr_pr - equipment ?acr_l - location)
     :precondition (and
       (Available ?acr_pr)
       (At_Equipment ?acr_pr ?acr_l)
