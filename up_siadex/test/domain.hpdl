@@ -5,7 +5,7 @@
     :negative-preconditions
     :conditional-effects
     :universal-preconditions
-    :disjunctive-preconditions
+    :disjuntive-preconditions
     :equality
     :existential-preconditions
   )

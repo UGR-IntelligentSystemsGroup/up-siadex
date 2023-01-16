@@ -1,0 +1,34 @@
+(define (problem p-problem)
+ (:domain p-domain)
+ (:customization
+  (= :time-format "%d/%m/%Y %H:%M:%S")
+  (= :time-horizon-relative 2500)
+  (= :time-start "05/06/2007 08:00:00")
+  (= :time-unit :hours)
+ )
+ (:objects
+   city_loc_0 city_loc_1 city_loc_2 - location
+   package_0 package_1 - package
+   truck_0 - vehicle
+   capacity_0 capacity_1 - capacity_number
+ )
+ (:init
+  (capacity_predecessor capacity_0 capacity_1)
+  (road city_loc_0 city_loc_1)
+  (road city_loc_1 city_loc_0)
+  (road city_loc_1 city_loc_2)
+  (road city_loc_2 city_loc_1)
+  (at_ package_0 city_loc_1)
+  (at_ package_1 city_loc_1)
+  (at_ truck_0 city_loc_2)
+  (capacity truck_0 capacity_1)
+ )
+ (:tasks-goal
+  :tasks (
+    [
+     (deliver package-0 city-loc-0)
+     (deliver package-1 city-loc-2)
+    ]
+  )
+ )
+)

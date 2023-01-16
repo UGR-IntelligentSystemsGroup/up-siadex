@@ -45,14 +45,13 @@ credits = Credits(
 class SIADEXEngine(PDDLPlanner):
     def __init__(self):
         super().__init__(needs_requirements=True)
-        
 
     # def _check_requisites(self):
     #     lib = subprocess.call(["which", "libreadline-dev"])
     #     py = subprocess.call(["which", "python2.7-dev"])
     #     if lib != 0 or py != 0:
-    #         raise UPException("Package neededs on system: libreadline-dev, python2.7-dev") 
-        
+    #         raise UPException("Package neededs on system: libreadline-dev, python2.7-dev")
+
     @staticmethod
     def name() -> str:
         return "SIADEX"
@@ -206,19 +205,19 @@ class SIADEXEngine(PDDLPlanner):
                 )
                 if res:
                     try:
-                        action_name = res.group(1)#.replace("_", "-")
+                        action_name = res.group(1)  # .replace("_", "-")
                         action = problem.action(action_name)
                     except Exception as e:
                         action_name = action_name.replace("_", "-")
                         action = problem.action(action_name)
                     parameters = []
                     for param in res.group(2).split():
-                        param = param.replace("_", "-")
-                        parameters.append(
-                            problem.env.expression_manager.ObjectExp(
-                                problem.object(param)
-                            )
-                        )
+                        try:
+                            obj = problem.object(param)
+                        except Exception as e:
+                            param = param.replace("_", "-")
+                            obj = problem.object(param)
+                        parameters.append(problem.env.expression_manager.ObjectExp(obj))
                     actions.append(up.plans.ActionInstance(action, tuple(parameters)))
                 else:
                     raise UPException(
