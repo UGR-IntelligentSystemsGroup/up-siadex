@@ -25,6 +25,8 @@ from unified_planning.io.hpdl.hpdl_writer import HPDLWriter
 from unified_planning.model import ProblemKind
 from unified_planning.model.htn.hierarchical_problem import HierarchicalProblem
 
+from up_siadex.dt_parser import DecompositionTreeParser
+
 USE_ASYNCIO_ON_UNIX = False
 ENV_USE_ASYNCIO = os.environ.get("UP_USE_ASYNCIO_PDDL_PLANNER")
 if ENV_USE_ASYNCIO is not None:
@@ -43,8 +45,9 @@ credits = Credits(
 
 
 class SIADEXEngine(PDDLPlanner):
-    def __init__(self):
+    def __init__(self, decomposition_tree: bool = False):
         super().__init__(needs_requirements=True)
+        self.decomposition_tree = decomposition_tree
         
 
     # def _check_requisites(self):
@@ -58,7 +61,10 @@ class SIADEXEngine(PDDLPlanner):
         return "SIADEX"
 
     def _get_cmd(
-        self, domain_filename: str, problem_filename: str, plan_filename: str
+        self,
+        domain_filename: str,
+        problem_filename: str,
+        plan_filename: str
     ) -> List[str]:
         base_command = [
             pkg_resources.resource_filename(__name__, "bin/planner"),
@@ -69,6 +75,9 @@ class SIADEXEngine(PDDLPlanner):
             "-o",
             plan_filename,
         ]
+        if self.decomposition_tree:
+            base_command.append("-t")
+
         return base_command
 
     def _solve(
@@ -135,6 +144,13 @@ class SIADEXEngine(PDDLPlanner):
                         )
                 timeout_occurred, (proc_out, proc_err), retval = exec_res
 
+            # Parse decomposition tree
+            if self.decomposition_tree:
+                dt_parser = DecompositionTreeParser()
+                dt = dt_parser.parse(proc_err[0])
+            else:
+                dt = None
+
             logs.append(up.engines.results.LogMessage(LogLevel.INFO, "".join(proc_out)))
             logs.append(
                 up.engines.results.LogMessage(LogLevel.ERROR, "".join(proc_err))
@@ -150,7 +166,7 @@ class SIADEXEngine(PDDLPlanner):
                 )
         status: PlanGenerationResultStatus = self._result_status(problem, plan, retval)
         return PlanGenerationResult(
-            status, plan, log_messages=logs, engine_name=self.name
+            status, plan, decomposition_tree=dt, log_messages=logs, engine_name=self.name
         )
 
     @staticmethod
