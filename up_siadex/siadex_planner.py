@@ -10,20 +10,17 @@ from typing import IO, Callable, List, Optional, Union
 import pkg_resources
 import unified_planning as up
 from unified_planning.engines import Credits, PDDLPlanner
-from unified_planning.engines.pddl_planner import (
-    run_command_asyncio,
-    run_command_posix_select,
-)
-from unified_planning.engines.results import (
-    LogLevel,
-    LogMessage,
-    PlanGenerationResult,
-    PlanGenerationResultStatus,
-)
+from unified_planning.engines.pddl_planner import (run_command_asyncio,
+                                                   run_command_posix_select)
+from unified_planning.engines.results import (LogLevel, LogMessage,
+                                              PlanGenerationResult,
+                                              PlanGenerationResultStatus)
 from unified_planning.exceptions import UPException
 from unified_planning.io.hpdl.hpdl_writer import HPDLWriter
 from unified_planning.model import ProblemKind
 from unified_planning.model.htn.hierarchical_problem import HierarchicalProblem
+
+from up_siadex import SIADEXDebugger
 
 USE_ASYNCIO_ON_UNIX = False
 ENV_USE_ASYNCIO = os.environ.get("UP_USE_ASYNCIO_PDDL_PLANNER")
@@ -69,6 +66,10 @@ class SIADEXEngine(PDDLPlanner):
             plan_filename,
         ]
         return base_command
+
+    @staticmethod
+    def debugger():
+        return SIADEXDebugger()
 
     def _solve(
         self,

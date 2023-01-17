@@ -24,28 +24,49 @@ class ICommand(ABC):
 
 
 class STRCommand(ABC):
+    """Run a string command"""
+
     name = None
     cmd = None
+
+    def __init__(self, cmd: str) -> None:
+        super().__init__()
+        self.cmd = cmd
 
     def parse(
         self, problem: "up.model.AbstractProblem", std: List[str], err: List[str]
     ):
-        raise NotImplementedError()
+        [print(msg, end="") for msg in std]
+        print("_" * 50)
+        [print(msg, end="") for msg in err]
 
 
 class StateCommand(ICommand):
+    """Returns a list of parametrized fluents that represents the actual state"""
+
     name = "state"
     cmd = "print state"
 
     def parse(
-        self, problem: "up.model.AbstractProblem", std: List[str], err: List[str]
+        self,
+        problem: "up.model.AbstractProblem",
+        std: List[str],
+        err: List["up.model.Fluent"],
     ):
         err = [er for er in err if not er.startswith("(***")]
         err = [er for er in err if not er.startswith("\n")]
         result = []
         for pre in err:
-            problem.
-        return err
+            pre = pre.replace("(", "").replace(")", "").replace("\n", "").split(" ")
+            if pre[0][-1] == "_":
+                pre[0] = pre[0][:-1]
+            fluent = problem.fluent(pre[0].replace("_", "-"))
+            parameters = []
+            for obj in pre[1:]:
+                obj = obj.replace("_", "-")
+                parameters.append(problem.object(obj))
+            result.append(fluent(*parameters))
+        return result
 
 
 class SIADEXDebugger:
@@ -69,6 +90,34 @@ class SIADEXDebugger:
             "-g",
         ]
         return base_command
+
+    def _capture_output(self, queue: Queue):
+        """This methods capture the output from a thread."""
+        self.lock = True
+        result = []
+        while True:
+            try:
+                # Capture msgs
+                line = queue.get(block=False)
+                result.append(line)
+                # print(line, end='')
+            except Empty:
+                # No more messages so...
+                # # Free the lock
+                # # return the result
+                self.lock = False
+                return result
+
+    def _capture_std(self):
+        """This methods captures the output of STD from the thread."""
+        return self._capture_output(self.std_q)
+
+    def _capture_error(self):
+        """This methods captures the output of err from the thread."""
+        return self._capture_output(self.err_q)
+
+    def __del__(self):
+        return self.stop()
 
     def debug(self, problem: "up.model.AbstractProblem"):
         """Initialize the debug process for a problem"""
@@ -137,46 +186,18 @@ class SIADEXDebugger:
         except BrokenPipeError as error:
             print("Error: ", error)
             self.started = False
-            # print("Restarting")
-            # std = self._capture_std()
-            # err = self._capture_error()
-            # [print(msg, end="") for msg in std]
-            # print("_" * 50)
-            # [print(msg, end="") for msg in err]
-            # self.__init__()
-            # self.lock = False
-            # self.command(command, parser)
 
     def run(self, command: ICommand):
+        """Run a command"""
         return self._run_command(command.cmd, command.parse)
 
-    def _capture_output(self, queue: Queue):
-        """This methods capture the output from a thread."""
-        self.lock = True
-        result = []
-        while True:
-            try:
-                # Capture msgs
-                line = queue.get(block=False)
-                result.append(line)
-                # print(line, end='')
-            except Empty:
-                # No more messages so...
-                # # Free the lock
-                # # return the result
-                self.lock = False
-                return result
+    def force_run(self, command: str):
+        """Runs a string command"""
+        return self.run(STRCommand(command))
 
-    def _capture_std(self):
-        """This methods captures the output of STD from the thread."""
-        return self._capture_output(self.std_q)
-
-    def _capture_error(self):
-        """This methods captures the output of err from the thread."""
-        return self._capture_output(self.err_q)
-
-    def __del__(self):
-        return self.stop()
+    def state(self):
+        """Returns a list of parametrized fluents that represents the actual state"""
+        return self.run(StateCommand())
 
     def stop(self):
         """Stops the debug process"""
