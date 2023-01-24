@@ -5,7 +5,6 @@ import tempfile
 import threading
 import time
 from abc import ABC
-from collections import OrderedDict
 from dataclasses import dataclass
 from queue import Empty, Queue
 from typing import List, Tuple, Union
@@ -16,6 +15,7 @@ from unified_planning.io.hpdl.hpdl_writer import HPDLWriter
 from unified_planning.model.htn.hierarchical_problem import HierarchicalProblem
 from unified_planning.model.htn.task import Subtask, Task
 from unified_planning.model.state import UPCOWState
+from unified_planning.plans import ActionInstance, SequentialPlan
 from unified_planning.shortcuts import *
 
 
@@ -35,6 +35,7 @@ def find_task_action(
 
 
 def find_depth(line: str) -> Tuple[int, str]:
+    """Finds the depth in the message, returns the line clean"""
     if line.startswith("(***"):
         last = line.find("***)")
         depth = int(line[4:last])
@@ -44,16 +45,20 @@ def find_depth(line: str) -> Tuple[int, str]:
 
 
 def find_obj(problem: "up.model.AbstractProblem", name: str) -> "up.model.FNode":
+    """Returns an object from the problem"""
     return problem.object(name.replace("_", "-"))
 
 
 def find_fluent(problem: "up.model.AbstractProblem", name: str) -> "up.model.Fluent":
+    """Returns a fluent from the problem"""
     if name[-1] == "_":
         name = name[:-1]
     return problem.fluent(name.replace("_", "-"))
 
 
 class ICommand(ABC):
+    """Abstract command"""
+
     name = None
     cmd = None
 
@@ -110,6 +115,8 @@ class StateCommand(ICommand):
 
 @dataclass
 class AgendaLine:
+    """Represents one line of the agenda command"""
+
     identifier: int
     status: str
     expanded: str
@@ -126,6 +133,8 @@ class AgendaLine:
 
 
 class AgendaCommand(ICommand):
+    """Print agenda command"""
+
     name = "agenda"
     cmd = "print agenda"
 
@@ -176,6 +185,8 @@ class AgendaCommand(ICommand):
             successors[int(numbers[0][1:-1])] = [int(n) for n in numbers[1:-1]]
         # __________TASKS_____________
         tasks = {}
+        tasks[0] = AgendaLine(0, "root", "root", None, successors[0])
+
         rex = re.compile(r"\s+")  # remove multiple whitespace
         for task in err[task_position + 1 : end_position]:
             task = rex.sub(" ", task)
@@ -208,13 +219,94 @@ class AgendaCommand(ICommand):
                 succesors=successors.get(number, []),
             )
 
-        tasks[0] = AgendaLine(0, "root", "root", None, successors[0])
         return tasks
+
+
+class PlanCommand(ICommand):
+    """Returns the actual plan"""
+
+    name = "plan"
+    cmd = "print plan"
+
+    def parse(
+        self, problem: "up.model.AbstractProblem", std: List[str], err: List[str]
+    ) -> SequentialPlan:
+        actions = []
+        for line in err:
+            try:
+                line = (
+                    line.replace("(", "").replace(")", "").removesuffix("\n").split(" ")
+                )
+                action_name = line[1]
+                params = [find_obj(problem, p) for p in line[2:]]
+                action = find_task_action(problem, action_name)
+                actions.append(ActionInstance(action, tuple(params)))
+            except Exception as ex:
+                ...
+
+        return SequentialPlan(actions)
+
+
+class NexpCommand(ICommand):
+    name = "nexp"
+    cmd = "nexp"
+
+    def parse(
+        self, problem: "up.model.AbstractProblem", std: List[str], err: List[str]
+    ):
+        depth, line = find_depth(err[0])
+        try:
+            is_action = line.index("Solving action:")
+            print("Solving action")
+            """
+            (*** 7 ***) Solving action:
+            (:action drive
+            :parameters ( truck_0 ?l1 - location ?l2 - location)
+             """
+            action_name = err[1].split(" ")[1].strip()
+            action = find_task_action(problem, action_name)
+            vars = (
+                err[3]
+                .removeprefix(":parameters")
+                .replace("(", "")
+                .replace(")", "")
+                .replace("- ", "-")
+                .strip()
+                .split(" ")
+            )
+
+            print(vars)
+            params = []
+            for v in vars:
+                if v.startswith("-"):
+                    continue
+                if v.startswith("?"):
+                    continue
+
+                params.append(find_obj(problem, v))
+
+            return action, params
+        except ValueError as error:
+            ...
+
+        print(depth)
 
 
 class NextCommand(ICommand):
     name = "next"
     cmd = "next"
+
+    def _detect_version(self, line: str) -> int:
+        return 0
+
+    def _parse_first(self, err: List[str]):
+        pass
+
+    def _parse_second(self, err: List[str]):
+        pass
+
+    def _parse_third(self, err: List[str]):
+        pass
 
     def parse(
         self, problem: "up.model.AbstractProblem", std: List[str], err: List[str]
@@ -253,15 +345,15 @@ class NextCommand(ICommand):
         (:task deliver
         :parameters ( ?p - package ?l - location)
         (:method m_deliver
-        :precondition
-        ( )
-        :tasks (
-            (get_to ?v ?l1)
-            (load ?v ?l1 package_0)
-            (get_to ?v ?l2)
-            (unload ?v ?l2 package_0)
-        )
-        )
+            :precondition
+            ( )
+            :tasks (
+                (get_to ?v ?l1)
+                (load ?v ?l1 package_0)
+                (get_to ?v ?l2)
+                (unload ?v ?l2 package_0)
+            )
+            )
         )
 
         (*** 1 ***) Using method: m_deliver
@@ -333,6 +425,21 @@ class NextCommand(ICommand):
         """
 
         return
+
+
+class BreakCommand(ICommand):
+    name = "break"
+    cmd = "break"
+
+    def __init__(self, name: str, params: List[str]) -> None:
+        super().__init__()
+        params = " ".join(params)
+        self.cmd = f"break ({name} {params})"
+
+    def parse(
+        self, problem: "up.model.AbstractProblem", std: List[str], err: List[str]
+    ):
+        return STRCommand("").parse(problem, std, err)
 
 
 class SIADEXDebugger:
@@ -461,17 +568,42 @@ class SIADEXDebugger:
         """Runs a string command"""
         return self.run(STRCommand(command))
 
-    def state(self):
+    def list_break(self):
+        return self.run(STRCommand("break"))
+
+    def add_break(self, node: Union[FNode, InstantaneousAction, Task]):
+        if isinstance(node, FNode) and node.is_fluent_exp():
+            name = node.fluent().name
+            params = [str(p).replace("-", "_") for p in node.args]
+
+        # if node is Fluent:
+        #     name = node.fluent().name
+        #     params = [p.replace("-", "_") for p in node.args]
+        elif isinstance(node, Action) or isinstance(node, Task):
+            name = node.name
+            params = [f"?{p.name}" for p in node.parameters]
+
+        return self.run(BreakCommand(name, params))
+
+    def state(self) -> UPCOWState:
         """Returns a list of parametrized fluents that represents the actual state"""
         return self.run(StateCommand())
 
-    def agenda(self):
+    def agenda(self) -> Dict[int, AgendaLine]:
         """Returns the actual agenda"""
         return self.run(AgendaCommand())
+
+    def nexp(self):
+        """Advance one step in the debug process."""
+        return self.run(NexpCommand())
 
     def next(self):
         """Advance one step in the debug process."""
         return self.run(STRCommand("next"))
+
+    def plan(self) -> SequentialPlan:
+        """Returns the actual plan"""
+        return self.run(PlanCommand())
 
     def stop(self):
         """Stops the debug process"""
