@@ -11,7 +11,11 @@ from typing import List, Tuple, Union
 
 import pkg_resources
 import unified_planning as up
-from unified_planning.io.hpdl.hpdl_writer import HPDLWriter
+from unified_planning.io.hpdl.hpdl_writer import (
+    ConverterToPDDLString,
+    HPDLWriter,
+    _get_pddl_name,
+)
 from unified_planning.model.htn.hierarchical_problem import HierarchicalProblem
 from unified_planning.model.htn.task import Subtask, Task
 from unified_planning.model.state import UPCOWState
@@ -97,7 +101,7 @@ class StateCommand(ICommand):
         problem: "up.model.AbstractProblem",
         std: List[str],
         err: List[str],
-    ) -> UPCOWState:
+    ) -> List[FNode]:
         err = [er for er in err if not er.startswith("(***")]
         err = [er for er in err if not er.startswith("\n")]
         result = []
@@ -109,8 +113,75 @@ class StateCommand(ICommand):
                 parameters.append(find_obj(problem, obj))
             result.append(fluent(*parameters))
 
-        state = UPCOWState({f: True for f in result})
-        return state
+        # state = UPCOWState({f: True for f in result})
+        return result
+
+
+class EvalCommand(ICommand):
+
+    cmd = "eval"
+    name = "eval"
+    parameters = None
+
+    def __init__(self, precondition: str, parameters: List[Parameter] = None) -> None:
+        super().__init__()
+        self.cmd = f"eval {precondition}"
+        self.parameters = parameters
+
+    def parse(
+        self, problem: "up.model.AbstractProblem", std: List[str], err: List[str]
+    ):
+        unifications = []
+        if err[-1].startswith("No unification"):
+            return []
+
+        """
+        debug:> eval (and (at_ ?v - vehicle ?l1 - location) (road ?l1 - location ?l2 - location))
+        __________________________________________________
+        Evaluating: (and
+        (at_ ?v ?l1)
+        (road ?l1 ?l2)
+        )
+
+        ?l2 <- city_loc_0
+        ?l1 <- city_loc_1
+        ?v <- truck_0
+        3 variable subtition(s).
+
+        ?l2 <- city_loc_2
+        ?l1 <- city_loc_1
+        ?v <- truck_0
+        3 variable subtition(s).
+        """
+        # Lets parse it reversed
+        next_line = len(err) - 2
+        while next_line > -1:
+            # Is a new unification?
+            line = err[next_line].removesuffix("\n")
+            if line.startswith("("):
+                break
+            num = 0
+            if line.endswith("variable subtition(s)."):
+                # 3 variable subtition(s).
+                # Get the number
+                num = int(line.split(" ")[0])
+                batch = {}
+                for i in range(1, num + 1):
+                    line = err[next_line - i].removesuffix("\n")
+                    line = line.split(" <- ")
+                    parameter = line[0].removeprefix("?")
+                    if self.parameters:
+                        for p in self.parameters:
+                            if p.name == parameter:
+                                parameter = p
+                                break
+                    obj = line[1]
+                    batch[parameter] = find_obj(problem, obj)
+                unifications.append(batch)
+
+            next_line = next_line - num - 1
+
+        return unifications
 
 
 @dataclass
@@ -446,8 +517,11 @@ class SIADEXDebugger:
     std_q = Queue()
     err_q = Queue()
     problem: "up.model.AbstractProblem" = None
+    env: "up.model.Environment" = None
+    converter: ConverterToPDDLString = None
     thread_std: threading.Thread = None
     thread_err: threading.Thread = None
+
     temp_dir = None
     process = None
     lock = False
@@ -496,6 +570,8 @@ class SIADEXDebugger:
         """Initialize the debug process for a problem"""
         self.problem = problem
         assert isinstance(problem, HierarchicalProblem)
+        self.env = problem.env
+        self.converter = ConverterToPDDLString(problem.env, _get_pddl_name)
         writer = HPDLWriter(problem, True)
         self.temp_dir = tempfile.TemporaryDirectory()
         domain_filename = os.path.join(self.temp_dir.name, "domain.hpdl")
@@ -568,17 +644,47 @@ class SIADEXDebugger:
         """Runs a string command"""
         return self.run(STRCommand(command))
 
+    def eval(
+        self,
+        node: Union[
+            "up.model.Action",
+            "up.model.fnode.FNode",
+            "up.model.fluent.Fluent",
+            "up.model.parameter.Parameter",
+            bool,
+        ],
+    ):
+        """
+        Evaluates a precondition on the actual state
+        """
+        parameters = None
+        if isinstance(node, Action):
+            precondition = node.preconditions[0]
+            parameters = node.parameters
+            command = self.converter.convert(precondition)
+        elif isinstance(node, Fluent):
+            args = ""
+            for s in node.signature:
+                args += f"?{s.name} "
+            command = f"({node.name} {args})"
+        else:
+            precondition = node
+            command = self.converter.convert(precondition)
+        # print(precondition_exp)
+        return self.run(EvalCommand(command, parameters))
+
     def list_break(self):
+        """List all breakpoints"""
         return self.run(STRCommand("break"))
 
-    def add_break(self, node: Union[FNode, InstantaneousAction, Task]):
+    def add_break(self, node: Union[FNode, Fluent, InstantaneousAction, Task]):
+        """Set a breakpoint"""
         if isinstance(node, FNode) and node.is_fluent_exp():
             name = node.fluent().name
             params = [str(p).replace("-", "_") for p in node.args]
-
-        # if node is Fluent:
-        #     name = node.fluent().name
-        #     params = [p.replace("-", "_") for p in node.args]
+        elif isinstance(node, Fluent):
+            name = node.name
+            params = [f"?{p.name}" for p in node.signature]
         elif isinstance(node, Action) or isinstance(node, Task):
             name = node.name
             params = [f"?{p.name}" for p in node.parameters]
