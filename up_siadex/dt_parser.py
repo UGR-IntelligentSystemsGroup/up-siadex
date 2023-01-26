@@ -11,7 +11,7 @@ class DecompositionTreeParser():
     def __init__(self):
         pass
 
-    def parse(self, output: str) -> str:
+    def parse(self, problem, output: str, plan: str = "") -> str:
         # Remove until 'Root' is seen    
         index = output.find("Root")
         output = output[index:]
@@ -24,13 +24,13 @@ class DecompositionTreeParser():
             raise RuntimeError("Wrong format")
 
         # Removing empty lines
-        lines = list(filter(None, output_parts[1].splitlines()))
+        lines = list(filter(None, plan.splitlines()))
 
-        decomposition, tasklist = self._get_DT(output_parts[0])
+        decomposition, tasklist, unif = self._get_DT(output_parts[0])
         plan = self._parse_plan(lines, tasklist)
-        plan.extend(decomposition)
-
-        return DecompositionTree('\n'.join(plan))
+        # plan.extend(decomposition)
+        
+        return DecompositionTree(problem, '\n'.join(decomposition), '\n'.join(plan))
 
 # ------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------
@@ -38,8 +38,6 @@ class DecompositionTreeParser():
     def _parse_plan(self, lines, tasklist):
         """ Produces the plan part in the final output """
         output = []
-        # output.append("==>")
-
         used_ids = []    # List of already included ids
 
         for action in lines:
@@ -72,7 +70,7 @@ class DecompositionTreeParser():
         roots = self._remove_goal_action_from_root(roots, tasks_ids)
 
         # Construct the decomposition tree    
-        return self._parse_DT(tasks_headers, info, roots, tasks_ids), tasks_headers
+        return self._parse_DT(tasks_headers, info, roots, tasks_ids), tasks_headers, unif
 
     # ------------------------------------------------------------------------------
 
@@ -219,8 +217,6 @@ class DecompositionTreeParser():
                 if len(subtasks) > 1 or len(subtasks) == 0 or (len(subtasks) == 1 and 'primitive' not in tasks[subtasks[0]]):
                     output.append(ident + " " + tasks[ident][1:-1] + " -> " + method 
                                         + " " + " ".join(subtasks))
-
-        # output.append("<==")
 
         return output
 
