@@ -10,7 +10,7 @@ __NOTE__: At the moment the UPF version working with SIADEX is hosted in [this f
 ## SIADEX Basic Usage
 
 [![Open In GitHub](https://img.shields.io/badge/see-Github-579aca?logo=github)](siadex.ipynb)
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github.com/UGR-IntelligentSystemsGroup/up-siadex/tree/main/Notebooks/siadex.ipynb)
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/UGR-IntelligentSystemsGroup/up-siadex/blob/master/Notebooks/siadex.ipynb)
 
 In this notebook we show the basic usage of SIADEX and the hierarchical structures of UPF.
 
@@ -25,7 +25,7 @@ In this notebook we show the basic usage of SIADEX and the hierarchical structur
 ## Analysing the Decomposition Tree of a Plan
 
 [![Open In GitHub](https://img.shields.io/badge/see-Github-579aca?logo=github)](siadex-dt.ipynb)
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github.com/UGR-IntelligentSystemsGroup/up-siadex/tree/main/Notebooks/siadex-dt.ipynb)
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/UGR-IntelligentSystemsGroup/up-siadex/blob/master/Notebooks/siadex-dt.ipynb)
 
 In this notebook we explore the `DecompositionTree` class that gives insights of what the planner has done to reach a resulting plan.
 
