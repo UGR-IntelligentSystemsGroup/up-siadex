@@ -184,6 +184,21 @@ class EvalCommand(ICommand):
         return unifications
 
 
+class EffectCommand(ICommand):
+    cmd = "apply"
+    name = "apply"
+
+    def __init__(self, effect: str) -> None:
+        super().__init__()
+        self.cmd = f"apply {effect}"
+
+    def parse(
+        self, problem: "up.model.AbstractProblem", std: List[str], err: List[str]
+    ):
+        pass
+        # return STRCommand("").parse(problem, std, err)
+
+
 @dataclass
 class AgendaLine:
     """Represents one line of the agenda command"""
@@ -644,7 +659,7 @@ class SIADEXDebugger:
         """Runs a string command"""
         return self.run(STRCommand(command))
 
-    def eval(
+    def eval_preconditions(
         self,
         node: Union[
             "up.model.Action",
@@ -653,7 +668,7 @@ class SIADEXDebugger:
             "up.model.parameter.Parameter",
             bool,
         ],
-    ):
+    ) -> List[Dict[Union[Parameter, str], FNode]]:
         """
         Evaluates a precondition on the actual state
         """
@@ -672,6 +687,12 @@ class SIADEXDebugger:
             command = self.converter.convert(precondition)
         # print(precondition_exp)
         return self.run(EvalCommand(command, parameters))
+
+    def apply_effect(self, effect: FNode):
+        """Apply an effect"""
+        command = self.converter.convert(effect)
+        self.run(EffectCommand(command))
+        return self.run(StateCommand())
 
     def list_break(self):
         """List all breakpoints"""
