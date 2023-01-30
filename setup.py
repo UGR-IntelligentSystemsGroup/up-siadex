@@ -29,6 +29,7 @@ setup(
     name="up_siadex",
     version="0.0.1",
     description="up_siadex",
+    long_description=long_description,
     author="UGR Intelligent Systems Group",
     author_email="jorgesoler@ugr.es,ignaciovellido@ugr.es",
     packages=["up_siadex"],
