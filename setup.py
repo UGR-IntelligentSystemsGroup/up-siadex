@@ -6,7 +6,14 @@ from setuptools import setup  # type: ignore
 
 arch = (platform.system(), platform.machine())
 
-
+long_description=\
+'''
+ ============================================================
+    UP-SIADEX
+ ============================================================
+    up-siadex is a small package that allows an exchange of
+    equivalent data structures between unified_planning and SIADEX.
+'''
 
 EXECUTABLES = {
     ("Linux", "x86_64"): "bin/planner",
@@ -22,7 +29,7 @@ setup(
     name="up_siadex",
     version="0.0.1",
     description="up_siadex",
-    author="UGR",
+    author="UGR Intelligent Systems Group",
     author_email="jorgesoler@ugr.es,ignaciovellido@ugr.es",
     packages=["up_siadex"],
     package_data={"": [executable]},
