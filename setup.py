@@ -23,7 +23,7 @@ setup(
     version="0.0.1",
     description="up_siadex",
     author="UGR",
-    author_email="jorgesoler@ugr.es,ignaciove@ugr.es",
+    author_email="jorgesoler@ugr.es,ignaciovellido@ugr.es",
     packages=["up_siadex"],
     package_data={"": [executable]},
     include_package_data=True,
