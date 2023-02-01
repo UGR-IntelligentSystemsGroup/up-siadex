@@ -11,11 +11,8 @@ from typing import List, Tuple, Union
 
 import pkg_resources
 import unified_planning as up
-from unified_planning.io.hpdl.hpdl_writer import (
-    ConverterToPDDLString,
-    HPDLWriter,
-    _get_pddl_name,
-)
+from unified_planning.io.hpdl.hpdl_writer import (ConverterToPDDLString,
+                                                  HPDLWriter, _get_pddl_name)
 from unified_planning.model.htn.hierarchical_problem import HierarchicalProblem
 from unified_planning.model.htn.task import Subtask, Task
 from unified_planning.model.state import UPCOWState
@@ -528,6 +525,63 @@ class BreakCommand(ICommand):
         return STRCommand("").parse(problem, std, err)
 
 
+class ListBreakCommand(ICommand):
+    name = "list break"
+    cmd = "break"
+
+    def parse(
+        self, problem: "up.model.AbstractProblem", std: List[str], err: List[str]
+    ):
+        """Breakpoint 0::<enabled>(road ?l1 ?l2)
+        Breakpoint 1::<enabled>(road ?l1 ?l2)
+        """
+
+        result = {}
+
+        for line in err:
+            line = line.removeprefix("Breakpoint ").removesuffix("\n")
+            line = line.replace("::", " ").replace("<", " ").replace(">", " ")
+            line = line.split(" ")
+            num = int(line[0])
+            status = line[2] == "enabled"
+            node = " ".join(line[3:])
+            result[num] = {"id": num, "enabled": status, "node": node}
+
+        return result
+
+        # return STRCommand("").parse(problem, std, err)
+
+
+class DisableBreakCommand(ICommand):
+    name = "disable"
+    cmd = "disable"
+
+    def __init__(self, iden: int) -> None:
+        super().__init__()
+        self.cmd = f"disable {iden}"
+
+    def parse(
+        self, problem: "up.model.AbstractProblem", std: List[str], err: List[str]
+    ):
+        pass
+        # return super().parse(problem, std, err)
+
+
+class EnableBreakCommand(ICommand):
+    name = "enable"
+    cmd = "enable"
+
+    def __init__(self, iden: int) -> None:
+        super().__init__()
+        self.cmd = f"enable {iden}"
+
+    def parse(
+        self, problem: "up.model.AbstractProblem", std: List[str], err: List[str]
+    ):
+        pass
+        # return super().parse(problem, std, err)
+
+
 class SIADEXDebugger:
     std_q = Queue()
     err_q = Queue()
@@ -696,7 +750,7 @@ class SIADEXDebugger:
 
     def list_break(self):
         """List all breakpoints"""
-        return self.run(STRCommand("break"))
+        return self.run(ListBreakCommand())
 
     def add_break(self, node: Union[FNode, Fluent, InstantaneousAction, Task]):
         """Set a breakpoint"""
@@ -710,7 +764,18 @@ class SIADEXDebugger:
             name = node.name
             params = [f"?{p.name}" for p in node.parameters]
 
-        return self.run(BreakCommand(name, params))
+        self.run(BreakCommand(name, params))
+        return self.run(ListBreakCommand())
+
+    def enable_break(self, iden: int):
+        """Enable a breakpoint"""
+        self.run(EnableBreakCommand(iden))
+        return self.run(ListBreakCommand())
+
+    def disable_break(self, iden: int):
+        """Disable a breakpoint"""
+        self.run(DisableBreakCommand(iden))
+        return self.run(ListBreakCommand())
 
     def state(self) -> UPCOWState:
         """Returns a list of parametrized fluents that represents the actual state"""
