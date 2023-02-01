@@ -1,0 +1,9 @@
+# For pytest workflow when pushing to this repository
+name: my_env
+channels:
+ - defaults
+dependencies:
+ - pip
+ - pip:
+   # Using fork
+   - -e git://github.com/IgnacioVellido/unified-planning.git#egg=unified-planning
