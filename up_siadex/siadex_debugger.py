@@ -11,8 +11,11 @@ from typing import List, Tuple, Union
 
 import pkg_resources
 import unified_planning as up
-from unified_planning.io.hpdl.hpdl_writer import (ConverterToPDDLString,
-                                                  HPDLWriter, _get_pddl_name)
+from unified_planning.io.hpdl.hpdl_writer import (
+    ConverterToPDDLString,
+    HPDLWriter,
+    _get_pddl_name,
+)
 from unified_planning.model.htn.hierarchical_problem import HierarchicalProblem
 from unified_planning.model.htn.task import Subtask, Task
 from unified_planning.model.state import UPCOWState
@@ -204,7 +207,7 @@ class AgendaLine:
     status: str
     expanded: str
     subtask: Subtask
-    succesors: List[int]
+    successors: List[int]
 
     def __repr__(self) -> str:
         return self.__str__()
@@ -212,7 +215,7 @@ class AgendaLine:
     def __str__(self) -> str:
         return f"""{self.identifier}: ({self.subtask.task.name if self.subtask else "root"} {self.subtask.parameters if self.subtask else ""}) 
                 status: {self.status}, expanded: {self.expanded}, 
-                succesors: {self.succesors}"""
+                successors: {self.successors}"""
 
 
 class AgendaCommand(ICommand):
@@ -243,16 +246,19 @@ class AgendaCommand(ICommand):
         [6] (pending)    :unexpanded (unload ?v ?l2 package_0)
         ===========
         """
-        tree = []
 
         # __________SUCCESSORS_____________
         # Find "Task list:" position
+        task_position = -1
+        end_position = -1
         for i, e in enumerate(err):
             if e.startswith("Task list:"):
                 task_position = i
             if e.startswith("==========="):
                 end_position = i
 
+        if task_position == -1 or end_position == -1:
+            raise Exception("Error on debugger")
         # for i, e in enumerate(err):
         #     if e.startswith("==========="):
         #         end_position = i
@@ -299,7 +305,7 @@ class AgendaCommand(ICommand):
                 status=status,
                 expanded=expanded,
                 subtask=subtask,
-                succesors=successors.get(number, []),
+                successors=successors.get(number, []),
             )
 
         return tasks
@@ -677,6 +683,12 @@ class SIADEXDebugger:
     def _run_command(self, command: str, parser=None):
         """Run a command in the debugger"""
 
+        if not self.process:
+            raise Exception("Debugger stopped")
+
+        if self.process.poll() is not None:
+            raise Exception("Debugger stopped")
+
         if not self.started:
             raise Exception("Please start the debugger first: debugger.debug(problem)")
 
@@ -777,7 +789,7 @@ class SIADEXDebugger:
         self.run(DisableBreakCommand(iden))
         return self.run(ListBreakCommand())
 
-    def state(self) -> UPCOWState:
+    def state(self) -> List:
         """Returns a list of parametrized fluents that represents the actual state"""
         return self.run(StateCommand())
 
@@ -785,9 +797,32 @@ class SIADEXDebugger:
         """Returns the actual agenda"""
         return self.run(AgendaCommand())
 
-    def nexp(self):
-        """Advance one step in the debug process."""
-        return self.run(NexpCommand())
+    def agenda_tree(self):
+        agenda = self.agenda()
+        return self._print_tree(agenda, 0, "")
+
+    def _print_tree(self, data, node_id, indentation):
+        node = data[node_id]
+        subtask_str = f'{node.subtask.task.name if node.subtask else "root"} {node.subtask.parameters if node.subtask else ""}'
+        print(
+            "{}{}: ({}) status: {}, expanded: {}".format(
+                indentation, node_id, subtask_str, node.status, node.expanded
+            )
+        )
+        for successor in node.successors:
+            self._print_tree(data, successor, indentation + "    ")
+
+    def continue_run(self):
+        return self.run(STRCommand("continue"))
+
+    def continue_to(self, node: Union[FNode, Fluent, InstantaneousAction, Task]):
+        self.add_break(node)
+        return self.continue_run()
+
+    def nexp(self, step: int = 1):
+        """Advance x steps in the debug process."""
+        for _ in range(step):
+            self.run(STRCommand("nexp"))
 
     def next(self):
         """Advance one step in the debug process."""
@@ -796,6 +831,9 @@ class SIADEXDebugger:
     def plan(self) -> SequentialPlan:
         """Returns the actual plan"""
         return self.run(PlanCommand())
+
+    def help(self):
+        return self.run(STRCommand("help"))
 
     def stop(self):
         """Stops the debug process"""
