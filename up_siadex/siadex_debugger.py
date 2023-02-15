@@ -29,12 +29,18 @@ def find_task_action(
     """Returns the task or action by its name"""
     if name[-1] == "_":
         name = name[:-1]
-    name = name.replace("_", "-")
 
     if problem.has_task(name):
         return problem.get_task(name)
     if problem.has_action(name):
         return problem.action(name)
+
+    name = name.replace("_", "-")
+    if problem.has_task(name):
+        return problem.get_task(name)
+    if problem.has_action(name):
+        return problem.action(name)
+
     raise Exception(f"Not found Task or Action: {name}")
 
 
@@ -645,6 +651,11 @@ class SIADEXDebugger:
         """Initialize the debug process for a problem"""
         self.problem = problem
         assert isinstance(problem, HierarchicalProblem)
+        # Let's add the stopping action for an ending breakpoint
+        end_action = InstantaneousAction("siadex_debugger_stop")
+        self.problem.add_action(end_action)
+        self.problem.task_network.add_subtask(end_action)
+
         self.env = problem.env
         self.converter = ConverterToPDDLString(problem.env, _get_pddl_name)
         writer = HPDLWriter(problem, True)
@@ -679,6 +690,9 @@ class SIADEXDebugger:
         self.thread_std.start()
         self.thread_err.start()
         self.started = True
+
+        # Create the ending breakpoint
+        self.add_break(end_action)
 
     def _run_command(self, command: str, parser=None):
         """Run a command in the debugger"""
