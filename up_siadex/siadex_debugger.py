@@ -800,6 +800,8 @@ class SIADEXDebugger:
 
     def disable_break(self, iden: int):
         """Disable a breakpoint"""
+        if iden == 0:
+            return self.run(ListBreakCommand())
         self.run(DisableBreakCommand(iden))
         return self.run(ListBreakCommand())
 
