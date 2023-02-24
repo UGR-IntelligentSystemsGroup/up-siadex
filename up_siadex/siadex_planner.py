@@ -25,6 +25,7 @@ from unified_planning.io.hpdl.hpdl_writer import HPDLWriter
 from unified_planning.model import ProblemKind
 from unified_planning.model.htn.hierarchical_problem import HierarchicalProblem
 
+from up_siadex import SIADEXDebugger
 from up_siadex.dt_parser import DecompositionTreeParser
 
 USE_ASYNCIO_ON_UNIX = False
@@ -48,23 +49,19 @@ class SIADEXEngine(PDDLPlanner):
     def __init__(self, decomposition_tree: bool = False):
         super().__init__(needs_requirements=True)
         self.decomposition_tree = decomposition_tree
-        
 
     # def _check_requisites(self):
     #     lib = subprocess.call(["which", "libreadline-dev"])
     #     py = subprocess.call(["which", "python2.7-dev"])
     #     if lib != 0 or py != 0:
-    #         raise UPException("Package neededs on system: libreadline-dev, python2.7-dev") 
-        
+    #         raise UPException("Package neededs on system: libreadline-dev, python2.7-dev")
+
     @staticmethod
     def name() -> str:
         return "SIADEX"
 
     def _get_cmd(
-        self,
-        domain_filename: str,
-        problem_filename: str,
-        plan_filename: str
+        self, domain_filename: str, problem_filename: str, plan_filename: str
     ) -> List[str]:
         base_command = [
             pkg_resources.resource_filename(__name__, "bin/planner"),
@@ -79,6 +76,10 @@ class SIADEXEngine(PDDLPlanner):
             base_command.append("-t")
 
         return base_command
+
+    @staticmethod
+    def debugger():
+        return SIADEXDebugger()
 
     def _solve(
         self,
@@ -144,7 +145,6 @@ class SIADEXEngine(PDDLPlanner):
                         )
                 timeout_occurred, (proc_out, proc_err), retval = exec_res
 
-
             logs.append(up.engines.results.LogMessage(LogLevel.INFO, "".join(proc_out)))
             logs.append(
                 up.engines.results.LogMessage(LogLevel.ERROR, "".join(proc_err))
@@ -168,7 +168,11 @@ class SIADEXEngine(PDDLPlanner):
 
         status: PlanGenerationResultStatus = self._result_status(problem, plan, retval)
         return PlanGenerationResult(
-            status, plan, decomposition_tree=dt, log_messages=logs, engine_name=self.name
+            status,
+            plan,
+            decomposition_tree=dt,
+            log_messages=logs,
+            engine_name=self.name,
         )
 
     @staticmethod
@@ -209,13 +213,13 @@ class SIADEXEngine(PDDLPlanner):
                 "up.model.Variable",
             ],
         ] = None,
-    ) -> tuple["up.plans.Plan",str]:
+    ) -> tuple["up.plans.Plan", str]:
         """Takes a problem and a filename and returns the plan parsed from the file."""
         actions = []
-        original_plan = "" # Original plan as str
+        original_plan = ""  # Original plan as str
         with open(plan_filename, "r", encoding="utf-8") as plan:
             for line in plan.readlines():
-                original_plan += line # Store as text (for DecompositionTree)
+                original_plan += line  # Store as text (for DecompositionTree)
 
                 if re.match(r"^\s*(;.*)?$", line):
                     continue
@@ -227,19 +231,19 @@ class SIADEXEngine(PDDLPlanner):
                 )
                 if res:
                     try:
-                        action_name = res.group(1)#.replace("_", "-")
+                        action_name = res.group(1)  # .replace("_", "-")
                         action = problem.action(action_name)
                     except Exception as e:
                         action_name = action_name.replace("_", "-")
                         action = problem.action(action_name)
                     parameters = []
                     for param in res.group(2).split():
-                        param = param.replace("_", "-")
-                        parameters.append(
-                            problem.env.expression_manager.ObjectExp(
-                                problem.object(param)
-                            )
-                        )
+                        try:
+                            obj = problem.object(param)
+                        except Exception as e:
+                            param = param.replace("_", "-")
+                            obj = problem.object(param)
+                        parameters.append(problem.env.expression_manager.ObjectExp(obj))
                     actions.append(up.plans.ActionInstance(action, tuple(parameters)))
                 else:
                     raise UPException(
