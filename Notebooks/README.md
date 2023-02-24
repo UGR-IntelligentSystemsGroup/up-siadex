@@ -32,4 +32,7 @@ In this notebook we explore the `DecompositionTree` class that gives insights of
 
 ## Debugging a Planning Execution
 
-_Work in progress_
+[![Open In GitHub](https://img.shields.io/badge/see-Github-579aca?logo=github)](debugger.ipynb)
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/UGR-IntelligentSystemsGroup/up-siadex/blob/master/Notebooks/debugger.ipynb)
+
+This notebook shows how to use the `Debugger` class and the functionality it provides.
