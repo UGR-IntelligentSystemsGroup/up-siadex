@@ -5,6 +5,8 @@ import subprocess
 import sys
 import tempfile
 from asyncio.subprocess import PIPE
+from datetime import datetime
+from fractions import Fraction
 from typing import IO, Callable, List, Optional, Union
 
 import pkg_resources
@@ -202,54 +204,101 @@ class SIADEXEngine(PDDLPlanner):
         self,
         problem: "up.model.Problem",
         plan_filename: str,
-        get_item_named: Callable[
-            [str],
-            Union[
-                "up.model.Type",
-                "up.model.Action",
-                "up.model.Fluent",
-                "up.model.Object",
-                "up.model.Parameter",
-                "up.model.Variable",
-            ],
-        ] = None,
-    ) -> tuple["up.plans.Plan", str]:
-        """Takes a problem and a filename and returns the plan parsed from the file."""
-        actions = []
-        original_plan = ""  # Original plan as str
-        with open(plan_filename, "r", encoding="utf-8") as plan:
-            for line in plan.readlines():
-                original_plan += line  # Store as text (for DecompositionTree)
+    ) -> "up.plans.Plan":
+        """
+        Takes a problem, a filename and a map of renaming and returns the plan parsed from the file.
 
+        :param problem: The up.model.problem.Problem instance for which the plan is generated.
+        :param plan_filename: The path of the file in which the plan is written.
+        :param get_item_named: A function that takes a name and returns the original up.model element instance
+            linked to that renaming.
+        :return: The up.plans.Plan corresponding to the parsed plan from the file
+        """
+        actions: List = []
+
+        def get_action_named(action_name, problem):
+            try:
+                action = problem.action(action_name)
+                return action
+            except Exception as e:
+                action_name = action_name.replace("_", "-")
+                action = problem.action(action_name)
+                return action
+
+        def get_object_named(obj_name, problem):
+            try:
+                obj = problem.object(obj_name)
+                return obj
+            except Exception as e:
+                obj_name = obj_name.replace("_", "-")
+                obj = problem.object(obj_name)
+                return obj
+
+        with open(plan_filename) as plan:
+            is_tt = False
+            original_plan = ""
+            for line in plan.readlines():
+                original_plan += line
                 if re.match(r"^\s*(;.*)?$", line):
                     continue
-                line = line.lower()
-
-                res = re.match(
-                    r"^:action\s*\(\s*([\w?-_]+)((\s+[\w?-_]+)*)\s*\)\s*$",
-                    line.lower(),
+                # line = line.lower()
+                s_ai = re.match(
+                    r"^:action\s*\(\s*([\w?-_]+)((\s+[\w?-_]+)*)\s*\)\s*$", line
                 )
-                if res:
-                    try:
-                        action_name = res.group(1)  # .replace("_", "-")
-                        action = problem.action(action_name)
-                    except Exception as e:
-                        action_name = action_name.replace("_", "-")
-                        action = problem.action(action_name)
-                    parameters = []
-                    for param in res.group(2).split():
-                        try:
-                            obj = problem.object(param)
-                        except Exception as e:
-                            param = param.replace("_", "-")
-                            obj = problem.object(param)
-                        parameters.append(problem.env.expression_manager.ObjectExp(obj))
-                    actions.append(up.plans.ActionInstance(action, tuple(parameters)))
+                t_ai = re.match(
+                    r"^:action\s*\(\s*([\w?-_]+)((\s+[\w?-_]+)*)\s*\)\s*(start:\s*(.*)\s+end:\s*(.*)\s*)?$",
+                    line,
+                )
+                if s_ai:
+                    assert is_tt == False
+                    name = s_ai.group(1)
+                    params_name = s_ai.group(2).split()
+                elif t_ai:
+                    is_tt = True
+                    name = t_ai.group(1)
+                    params_name = t_ai.group(2).split()
+                    dur = None
+                    if t_ai.group(5) is not None:
+                        beginning_time = datetime.strptime(
+                            "05/06/2007 08:00:00", "%d/%m/%Y %H:%M:%S"
+                        )
+                        start_time = datetime.strptime(
+                            t_ai.group(5), "%d/%m/%Y %H:%M:%S"
+                        )
+                        start = start_time - beginning_time
+                        start = int(start.total_seconds() / 60)
+                        end_time = datetime.strptime(t_ai.group(6), "%d/%m/%Y %H:%M:%S")
+                        dur = end_time - start_time
+                        dur = int(dur.total_seconds() / 60)  # Convert to minutes
                 else:
                     raise UPException(
-                        "Error parsing plan generated by " + self.__class__.__name__
+                        "Error parsing plan generated by "
+                        + self.__class__.__name__
+                        + "action:"
+                        + line
                     )
-        return up.plans.SequentialPlan(actions), original_plan
+
+                action = get_action_named(name, problem)
+                assert isinstance(action, up.model.Action), "Wrong plan or renaming."
+                parameters = []
+                for p in params_name:
+                    try:
+                        obj = get_object_named(p, problem)
+                    except:
+                        obj = p
+                    # assert isinstance(obj, up.model.Object), "Wrong plan or renaming."
+                    if isinstance(obj, up.model.Object):
+                        obj = problem.env.expression_manager.ObjectExp(obj)
+                    parameters.append(obj)
+                act_instance = up.plans.ActionInstance(action, tuple(parameters))
+                if is_tt:
+                    actions.append((start, act_instance, dur))
+                else:
+                    actions.append(act_instance)
+        if is_tt:
+            return up.plans.TimeTriggeredPlan(actions), original_plan
+        else:
+            return up.plans.SequentialPlan(actions), original_plan
 
     def _result_status(
         self,
