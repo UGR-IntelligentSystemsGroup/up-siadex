@@ -128,7 +128,9 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-.ipynb_checkpoints
+Notebooks/.ipynb_checkpoints
 unified-planning
+Notebooks/unified-planning
+Notebooks/up-siadex
 build
 *.egg-info
