@@ -2,6 +2,7 @@
 
 import platform
 import subprocess
+
 from setuptools import setup  # type: ignore
 
 arch = (platform.system(), platform.machine())
@@ -22,11 +23,11 @@ executable = EXECUTABLES[arch]
 
 setup(
     name="up_siadex",
-    version="0.0.1",
+    version="0.0.2",
     description="up_siadex",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url='https://github.com/UGR-IntelligentSystemsGroup/up-siadex',
+    url="https://github.com/UGR-IntelligentSystemsGroup/up-siadex",
     author="UGR Intelligent Systems Group",
     author_email="jorgesoler@ugr.es,ignaciovellido@ugr.es",
     packages=["up_siadex"],
