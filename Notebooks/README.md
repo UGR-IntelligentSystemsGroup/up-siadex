@@ -4,7 +4,14 @@ A list of notebooks showing the [SIADEX](https://github.com/IgnacioVellido/HPDL-
 
 For examples on how UPF works, take a look at the repo [notebooks](https://github.com/aiplan4eu/unified-planning/tree/master/notebooks).
 
-__NOTE__: At the moment the UPF version working with SIADEX is hosted in [this fork](https://github.com/IgnacioVellido/unified-planning).
+__NOTE__: At the moment the UPF version working with SIADEX is hosted in [this fork](https://github.com//UGR-IntelligentSystemsGroup/unified-planning).
+
+
+## SIADEX DEMO
+
+[![Open In GitHub](https://img.shields.io/badge/see-Github-579aca?logo=github)](siadex.ipynb)
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/UGR-IntelligentSystemsGroup/up-siadex/blob/master/Notebooks/demo.ipynb)
+
 
 
 ## SIADEX Basic Usage
